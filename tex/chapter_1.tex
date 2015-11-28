@@ -1,159 +1,136 @@
 %# -*- coding: utf-8-unix -*-
 %%==================================================
-%% chapter01.tex for SJTU Master Thesis
+%% chapter_1.tex for SJTU Master Thesis
 %%==================================================
 
-\chapter{绪论}
-\label{chap:what}
+\chapter{概述}
+\label{chap:intro}
+随着网络通信与计算机的不断发展，工业领域中应用了越来越多的基于网络的分布式系统。而随着这些系统的物理范围不断扩大，也为了保证分布式网络系统能够实现精确的数据采集、运行控制等实时性任务，工业中对于各个分布式节点的时间同步精度提出了极为严格的要求，尤其是在大多数以工业以太网为基础的控制系统中，已经逐渐对同步精度提出了微秒级甚至纳秒级别的要求。但是，由于实际测控设备之间固有的时钟差异和时钟数据在网络传输中的随机延时，而且现场设备会由于温度变化、电磁干扰、振荡器老化等多种原因而使得自身时钟并不稳定，使得时间误差随时间不断累积，严重破坏了如变电站、电力监控系统等对时钟同步严格的工业应用。因此，必须追求一种更加有效且高精度的时钟同步技术来提高系统内部节点之间的时钟同步精度。
 
-这是上海交通大学(非官方)学位论文 \LaTeX 模板，当前版本是 \version 。
-
-最早的一版学位模板是一位热心的物理系同学制作的。
-那份模板参考了自动化所学位论文模板，使用了CASthesis.cls文档类，中文字符处理则采用当时最为流行的 \CJKLaTeX 方案。
-我根据交大研究生院对学位论文的要求
-\footnote{\url{http://www.gs.sjtu.edu.cn/policy/fileShow.ahtml?id=130}}
-，结合少量个人审美喜好，完成了一份基本可用的交大 \LaTeX 学位论文模板。
-但是，搭建一个 \CJKLaTeX 环境并不简单，单单在Linux下配置环境和添加中文字体，就足够让新手打退堂鼓。
-在William Wang的建议下，我开始着手把模板向 \XeTeX 引擎移植。
-他完成了最初的移植，多亏了他出色的工作，后续的改善工作也得以顺利进行。
-
-随着我对 \LaTeX 系统认知增加，我又断断续续做了一些完善模板的工作，在原有硕士学位论文模板的基础上完成了交大学士和博士学位论文模板。
-
-现在，交大学位论文模板SJTUTHesis代码在github
-\footnote{\url{https://github.com/weijianwen/SJTUThesis}}
-上维护。
-你可以\href{https://github.com/weijianwen/SJTUThesis/issues}{在github上开issue}
-、或者在\href{https://bbs.sjtu.edu.cn/bbsdoc?board=TeX_LaTeX}{水源LaTeX版}发帖来反映遇到的问题。
-
-\section{使用模板}
-
-\subsection{准备工作}
-\label{sec:requirements}
-
-要使用这个模板撰写学位论文，需要在\emph{TeX系统}、\emph{中英文字体}、\emph{TeX技能}上有所准备。
-
+\section{时钟同步在工业领域的发展历程}
+\subsection{时钟同步概念}
+\label{sec:concept}
+时钟同步即保证工业系统内各个节点的时钟能够保持一致，即维护一个全局一致的物理或逻辑时钟，使得系统各节点中与时间有关的信息、时间及行为有一个全局一致的解释\supercite{1}。
+常说的时钟同步，主要包含了时刻同步和时间间隔一致。时刻即表示连续流逝时间的某一个瞬间，而时间间隔是指两个时刻之间的间隔长度。所以，时钟同步主要包括频率同步和相位同步两个方面：
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-	\item {\TeX}系统：所使用的{\TeX}系统要支持 \XeTeX 引擎，且带有ctex 2.x宏包，以2015年的\emph{完整}TeXLive、MacTeX发行版为佳。
-	\item 中英文字体：操作系统中需要安装\footnote{在Windows、Mac OS X 以及 Linux 上安装额外的字体，可以参考\href{https://www.searchfreefonts.com/articles/how-to-install-fonts.htm}{“How to install fonts?”}。
-}TeX Gyre Termes字体\footnote{\url{http://www.gust.org.pl/projects/e-foundry/tex-gyre/termes}}和四款Adobe中文字体
-\footnote{请从合法渠道获得Adobe字体。}：AdobeSongStd、AdobeKaitiStd、AdobeHeitiStd、AdobeFangsongStd。
-	\item TeX技能：尽管提供了对模板的必要说明，但这不是一份“ \LaTeX 入门文档”。在使用前请先通读其他入门文档。
-	\item 针对Windows用户的额外需求：学位论文模本分别使用git和GNUMake进行版本控制和构建，建议从Cygwin\footnote{\url{http://cygwin.com}}安装这两个工具。
+	\item 频率同步(Frequency Synchronization)：
+		所谓频率同步是指各从时钟自身运行的计数器频率保持相同平均速率。通过频率同步可以保持所有节点以相同的计数频率运行，从而极大减小时钟误差根源，降低了累积时钟误差。频率同步必须依靠接受连续的时钟信息才能计算出真实的频率并对自身作出调整。
+	\item 相位同步(Phase Synchronization)：
+		相位便是对频率的积分。通过将时钟的相位量化，赋予数值表示，就是时刻。相位同步可以接受离散的时间信息来调整本地时钟。
 \end{itemize}
 
-\subsection{模板选项}
-\label{sec:thesisoption}
+所以说，时钟同步主要是完成对时和守时这两个功能，所谓“对时”，就是通过不定期的对表操作，来将本地时钟的相位与远程节点相位进行同步；守时就是保持频率一致，尽可能的让本地节点和远程节点的时间间隔偏差在一个允许的范围内。
 
-sjtuthesis提供了一些常用选项，在thesis.tex在导入sjtuthesis模板类时，可以组合使用。
-这些选项包括：
+\subsection{现有时钟同步技术分析}
+\label{sec:sync_methods}
+在工业领域时钟同步技术不断发展，人们研究使用了如GPS、包时钟同步技术等主流方案来进行时钟同步。下面作简单介绍。
+\subsubsection{GPS同步技术}
+如超高压变电站等工业系统对于时间同步精度的要求非常高，例如变电站运行人员实时监控电网运行，一旦发生事故后的故障分析，这些都需要统一的时间基准。而以全球定位系统GPS作为时间基准，可以提供非常高的同步精度（达到50ns），而且这种方式不依赖通络的数据负载，直接传递频率和相位信息，让整个系统保持极高的同步性能。
 
+然而，这种方式也存在自身弊端。
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-\item 学位类型：bachelor(学位)、master(硕士)、doctor(博士)，是必选项。
-\item 中国字体：adobefonts(Adobe中文字体)、winfonts(使用Windows下的中文字体，该选项未在Linux/Mac下测试)。
-\item 正文字号：cs4size(小四)、c5size(五号)。
-\item 盲审选项：使用review选项后，论文作者、学号、导师姓名、致谢、发表论文和参与项目将被隐去。
+	\item GPS不适用于室内节点，存在难以选址和安装的问题，这使得GPS同步技术的人力成本增大。
+	\item GPS设备本身价格昂贵，而且人们一般会选取高昂的晶振用作备用时钟，以保持系统的安全性。而且若GPS设备大量使用，可想而知后期的更换升级的费用也会十分高昂。
+	\item 由于美国政府从未对GPS信号的质量及使用期限给予任何承若何保证，而且美国政府还具有对特定地区GPS信号严重降质处理的能力，所以大量使用GPS会存在严峻的国防安全隐患。
 \end{itemize}
 
-\subsection{编译模板}
-\label{sec:process}
-
-模板默认使用GNUMake构建，GNUMake将调用latemk工具自动完成模板多轮编译：
-
-\begin{lstlisting}[basicstyle=\small\ttfamily, caption={编译模板}, numbers=none]
-make clean thesis.pdf
-\end{lstlisting}
-
-若需要生成包含“原创性声明扫描件”的学位论文文档，请将扫描件保存为statement.pdf，然后调用make生成submit.pdf。
-
-\begin{lstlisting}[basicstyle=\small\ttfamily, caption={生成用于提交的学位论文}, numbers=none]
-make clean submit.pdf
-\end{lstlisting}
-
-编译失败时，可以尝试手动逐次编译，定位故障。
-
-\begin{lstlisting}[basicstyle=\small\ttfamily, caption={手动逐次编译}, numbers=none]
-xelatex -no-pdf thesis
-biber --debug thesis
-xelatex thesis
-xelatex thesis
-\end{lstlisting}
-
-\subsection{模板文件布局}
-\label{sec:layout}
-
-\begin{lstlisting}[basicstyle=\small\ttfamily,caption={模板文件布局},label=layout,float,numbers=none]
-├── LICENSE
-├── Makefile
-├── README.md
-├── bib
-│   └── thesis.bib
-├── figure
-│   ├── chap2
-│   │   ├── sjtulogo.eps
-│   │   ├── sjtulogo.jpg
-│   │   ├── sjtulogo.pdf
-│   │   └── sjtulogo.png
-│   └── sjtubanner.png
-├── sjtuthesis.cfg
-├── sjtuthesis.cls
-├── statement.pdf
-├── submit.pdf
-├── tex
-│   ├── abstract.tex
-│   ├── ack.tex
-│   ├── app_cjk.tex
-│   ├── app_eq.tex
-│   ├── app_log.tex
-│   ├── chapter01.tex
-│   ├── chapter02.tex
-│   ├── chapter03.tex
-│   ├── conclusion.tex
-│   ├── id.tex
-│   ├── patents.tex
-│   ├── projects.tex
-│   ├── pub.tex
-│   └── symbol.tex
-└── thesis.tex
-\end{lstlisting}
-
-本节介绍学位论文模板中木要文件和目录的功能。
-
-\subsubsection{格式控制文件}
-\label{sec:format}
-
-格式控制文件控制着论文的表现形式，包括两个文件： sjtuthesis.cfg, sjtuthesis.cls。
-
-\subsubsection{主控文件thesis.tex}
-\label{sec:thesistex}
-
-主控文件thesis.tex的作用就是将你分散在多个文件中的内容“整合”成一篇完整的论文。
-使用这个模板撰写学位论文时，你的学位论文内容和素材会被“拆散”到各个文件中：
-譬如各章正文、各个附录、各章参考文献等等。
-在thesis.tex中通过“include”命令将论文的各个部分包含进来，从而形成一篇结构完成的论文。
-对模板定制时引入的宏包，建议放在导言区。
-
-\subsubsection{各章源文件tex}
-\label{sec:thesisbody}
-
-这一部分是论文的主体，是以“章”为单位划分的，包括：
-
+\subsubsection{包时钟同步技术}
+所谓包时钟同步技术ToP(Timing over Packet)，就是利用分组网络来传递时间信息，而所传递的时间报文也有多种。
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-	\item 中英文摘要(abstract.tex)。前言(frontmatter)的其他部分，中英文封面、原创性声明、授权信息在sjtuthesis.cls中定义，不单独分离为tex文件。
-不单独弄成文件。
-	\item 正文(mainmatter)——学位论文正文的各章内容，源文件是chapter\emph{xxx}.tex。
-	\item 附录(app\emph{xx}.tex)、致谢(thuanks.tex)、攻读学位论文期间发表的学术论文目录(pub.tex)、个人简历(resume.tex)组成正文后的部分(backmatter)。
-参考文献列表由biber插入，不作为一个单独的文件。
+	\item  NTP(Network Time Protocol)协议全称是网络时间协议，主要用来使互联网上计算机保持时间同步，一般而言，NTP可以提供1-50ms的可靠时间源。另外，SNTP(Simple Network Time Protocol)简单网络时钟同步协议也是较为主流的时间同步协议，它能提供接近1ms的同步精度。然后这两种协议比较容易受到网络突发报文的影响而使得同步精度降低。
+	\item PTP(Precise Time Protocol)精确时间同步协议，来自于IEEE1588协议标准。该协议第一版于2002年推出，具备亚微秒级的同步精度，允许同时传递频率和相位信息。第二版于2008年公布，缩短并同意了报文长度，并且引入了透明时钟机制。具备更高的时间同步精度。
 \end{itemize}
 
-\subsubsection{图片文件夹figure}
-\label{sec:fig}
+结合对当前所有同步技术的综合分析可以看出，由于GPS严重的国防安全隐患和高昂的使用成本使得我们难以大规模应用这种同步技术，而NTP协议主要应用于互联网中保持计算机时间同步，其精度只能达到毫秒级别，同样不适用于对同步精度要求非常高的工业系统中。而PTP同步技术从实现的简单性、精度要求和稳定性方面都能够很好的满足现如今分布式系统对时间同步精度的要求，也是本文的主要研究对象。
 
-figure文件夹放置了需要插入文档中的图片文件(支持PNG/JPG/PDF/EPS格式的图片)，可以在按照章节划分子目录。
-模板文件中使用\verb|\graphicspath|命令定义了图片存储的顶层目录，在插入图片时，顶层目录名“figure”可省略。
 
-\subsubsection{参考文献数据库bib}
-\label{sec:bib}
+\section{IEEE1588时钟同步协议}
 
-目前参考文件数据库目录只存放一个参考文件数据库thesis.bib。
-关于参考文献引用，可参考第\ref{chap:example}章中的例子。
+\subsection{协议介绍}
+\label{sec:1588_intro}
+IEEE1588标准，即“网络测量和控制系统的精确时钟同步协议”，Precision Clock Synchronization Protocol for Networked Measurement and Control Systems，也称作PTP协议。
+
+自1995年以太网中数据传输速度从10Mb/s提高到100Mb/s后，计算机网络领域一致在尝试解决网络设备时钟同步问题，随后开发出了一套同步协议－－网络时间协议NTP \footnote{Network Time Protocol}－－来提高网络设备的同步性能。虽然在不断发展中，NTP协议同步精确度不断提高达到200$\mu$s，但是，面对同步精度要求越来越高的网络实时通信、测量仪器与工业控制领域，NTP难以达到它们的要求。
+
+随后，网络精密时钟同步委员会于2002年在IEEE标准委员会的支持下，推出了IEEE1588时钟同步标准。该标准推出后迅速在Ethernet/IP等基于以太网的总线中得到采用，称为普遍支持的网络对时技术。该协议采用了主从时钟方案，利用报文传递时间信息，基于网络链路的对称性和延时测量技术，来实现主从时钟的频率、相位精确同步。
+
+在2008年，该委员会继续发布了IEEE1588第二版。在第二版标准中，实现了亚微秒级的时钟同步，可以用于军事和实际的测试测量中。而且提供了更为灵活的同步周期、改进了时间戳的表示方法、解决了主时钟容错性能差的问题、提高了网络拓扑变化的适应性。另外，该版本中还引入了透明时钟，增加了端延时机制，有助于明显提高同步精度。
+
+\subsection{PTP协议特点}
+\label{sec:1588_features}
+PTP协议主要针对分布式网络系统中的精确时钟同步问题，它能够将系统内部各个独立时钟同步到一个统一的时钟标准上，而且消耗的网络和本地资源非常有限，并带来较高的时钟同步精度。如果硬件时钟能够提供硬件级别的时间戳标记功能，那么其同步精度能够达到亚微秒级别。而且PTP协议实现起来成本很低，也非常方便后期的维护工作。
+
+PTP协议与其他时钟同步协议如NTP/SNTP相比，具备如下几个特点：
+\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+	\item PTP协议适用于局域网中支持组播报文发送的网络通信技术，这种特性决定了该协议非常适合在以太网中实现，不需要经过大的改动就可以在高精度的网络控制系统中运行。
+	\item 可以实现亚微秒级别的同步精度，相比之下，NTP/SNTP最多只能达到微秒级别。
+	\item PTP协议所需要的网络资源和计算资源非常少，所以在实现起来消耗的成本不高。
+\end{itemize}
+
+
+\subsection{IEEE1588协议在当前工业领域的应用}
+\label{sec:application}
+随着IEEE1588协议的不断发展与实践，不仅在测试与测量控制、工业自动化领域广泛应用了该协议，而且随后的军事应用、分组通信和电力系统等多个领域也开始逐步将该同步方法应用进去。在国外，2015年3月在TI推出的高性能多核架构KeyStone\footnote{\url{http://www.eefocus.com/communication/m/339581}}中，提供了两个硬件功能\footnote{KeyStone1支持two step的时间戳模式，同时也能支持1588协议中规定的PTP报文解析}来支持IEEE1588：记录时间戳，发送同步脉冲。在国内，2014年12月，OPWILL\footnote{北京奥普维尔科技有限公司}发布了基于PTN协议分析仪的IEEE1588v2PTP和SyncE测试选件，为运营商提供关键的网络定时和频率同步测试服务来分析全新的IEEE1588v2 PTP和同步以太网（SyncE）协议，从而为运营商的移动回传和LTE测试提供超高性价比测试解决方案\footnote{\url{http://www.c114.net/news/50/a874237.html}}。
+
+\section{IEEE1588实际应用中的主要问题及相关研究}
+根据IEEE1588协议内容，系统时钟同步精度应该能够达到亚微秒级别\supercite{2}。然而，在实际的应用中，即使严格按照协议标准的内容来实现，仍然难以达到这样的同步精度。例如Padova大学曾严格按照协议标准，实现了一套完整的IEEE1588同步系统\supercite{3}，但是在运行中发现同步精度最高只有100微秒，和预期的同步精度还有很大的差距，更何况在工业现场中，更加复杂的工业环境使得同步精度更加难以保证。
+\subsection{主要问题}
+\label{sec:1588_problem}
+首先，我们知道1588协议的同步原理是采用了主从时钟通过时间戳报文来传递时间信息，并通过估计链路延时来计算最终的时间误差并予以校正。然后，我们对1588协议的深入分析及对现场应用情况的深入了解，可以发现以下因素严重破坏了1588实际运行的同步精度。
+
+\subsubsection{时间戳准确度}
+\label{sec:1588_problem_timestamp_accu}
+首先，1588协议的核心就是通过主从时钟对外发布包含时钟信息的报文来实现所有从时钟向主时钟同步。例如在同步过程中，主时钟会对外发送sync报文，该报文中标记的时间戳在理想情况下应该是报文离开主时钟的一瞬间的时间，但是在实际运行中，由于很多时间戳是在物理层之上标记的，报文被标记时间戳后仍会在协议栈中有短暂滞留，这样导致了发送时间戳的不准确，最终破坏了从时钟的同步计算精度。
+
+\subsubsection{链路不对称性}
+\label{sec:1588_problem_route_time_delay}
+通过分析1588协议可以看出，从时钟在计算主从时钟偏差时会假设报文传输的往返路径对称，即Master To Slave Delay 和 Slave To Master Delay相等，并据此来求得最终的offset值。严格来讲，这种假设并不成立。首先由于网络传输过程要经过中间节点如交换机等设备，报文在进入这些设备的协议栈会发生排队和堵塞的情况，而这些情况所导致的链路延时变动是无法预知的；另外，报文传输的拓扑结构也并非一成不变的，一旦拓扑结构发生变化，就意味着往返路径可能有极大的不同。这些都是实际运行中链路固有的不对称性表现，所以，如果只是简单按照1588协议中假设路径对称，那么势必会带来不可忽视的误差。
+
+\subsubsection{网络延时固有抖动}
+\label{sec:1588_problem_route_time_delay}
+由于1588协议中的报文需要在网络环境下进行传输，而在复杂的网络环境下，报文传输的时间一定会带有随机的抖动漂移，也就是说，即使网络负载良好，拓扑结构也不发生变动的情况下，网络延时仍然会有自身的随机抖动。如果对于这些抖动不进行处理，那么就会导致从时钟不断处于波动之中，甚至有可能导致从时钟系统不稳定。
+
+\subsubsection{从时钟校正策略}
+\label{sec:1588_problem_slave_clock_control}
+常规的对从时钟校正策略有直接校正和pi控制器校正，其中，直接校正能够快速对从时钟校正，在最短时间内实现时钟同步，然后，一旦offset值计算中存在较大偏差，那么从时钟将处于不断的快速波动当中，这会严重破坏从时钟的同步性能，甚至可能导致从时钟无法稳定。pi控制器是一种较为典型而简单的控制方法，能够保证从时钟较为处于较为稳定的状态，但是，简单的pi控制器并不能考虑到延时的波动对从时钟带来的影响，所以也无法达到很好的控制效果。
+
+\subsection{当今研究成果}
+\label{sec:1588_problem_research}
+当前，已经有很多专家学者在对1588协议进行深入研究。针对上述所提出的问题，也有一定的研究成果。
+\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+	\item 时间戳准确度：为了提高时间戳准确度，尽量使得报文中的时间戳直接来自物理层以可以减少报文在协议栈的停留，2007年推出了首个可以在以太网收发器上集成IEEE1588协议的芯片－DP83640\supercite{4}，该芯片能够将时间戳标记点葱原来的应用层下移到数据链路层和物理层之间，从而降低网络流量及协议栈对报文传输延时的影响。又比如，2015年3月TI推出的Keystone架构也同样能够支持物理时间戳标记\supercite{5}。
+	\item 链路不对称性：针对链路延时中的不对称性问题，李学桥层提出对主从路径延时和从主路径延时进行加权求平均的方法，其中权值来自于同步报文与延时请求报文的周期比\supercite{6}。在李帅等学者的文章《An Enhanced IEEE 1588 Time Synchronization for Asymmetric Communication Link in Packet Transport Network》中提出了一个扩展时钟同步方法来计算不对称路径下的时间偏差\supercite{7}。
+	\item 网络延时固有抖动：Jayesh Chhapekar在2012年发表的一篇文章中对IEEE1588数据包的包延时抖动进行数学分析和建模，并以此来观察数据包延时的概率是如何变化的\supercite{8}。文献\parencite{9}中设计了运用卡尔曼滤波算法来计算主从时钟偏差同样有助于减少固有抖动带来的影响。
+	\item 从时钟校正策略：文献\parencite{10}中对PI控制器参数选择进行了评估，但是没有详细研究具体的应用方法。文献\parencite{11}对PID控制器在时钟同步中应用进行分析，并且采用经验法整定PID参数，但并未考虑系统参数发生变化的情况下的参数调整。文献\parencite{12}利用模糊控制算法来估算时钟偏差，这种方法适合于时钟同步周期较大时，但是如果同步周期太大，网络的不确定性干扰加剧，使得模糊控制的效果变差。
+\end{itemize}
+
+\section{本文研究内容}
+结合上文可以知道，越来越多的工业领域对时钟同步精度提出了非常高的要求，而传统的NTP和GPS由于使用成本高昂或者同步精度不够而无法满足对应的需求。相较而言，IEEE1588精确时钟同步协议由于其易用性、成本低、精度高等多种优秀特性已经广泛应用于多种工业时钟同步场合，而且随着IEEE1588-2008的推出，其理想精度甚至可以达到亚微秒级，这预示着IEEE1588协议有着极高的研究价值。
+
+另外，在IEEE1588协议的实际应用过程中，我们也通过深入研究分析发现了协议本身存在的多种问题，例如未处理网络延时的不对称性及固有抖动，加之工业网络环境复杂，这使得IEEE1588协议在实际应用中无法达到非常理想的同步精度。而本文便是着手于影响同步精度的因素并通过深入分析来提出本人的解决方案。
+
+具体来说，本文主要立足于以下两点进行深入探讨：
+\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+	\item 网络传输时延的随机性和不确定性：
+在硬件提供高精度时间戳的情况下，网络传输延时误差成为了影响同步精度的最主要来源。因此，本文也着重考察对网络延时问题的解决方法。在文中，本人将网络时延拆分成固有抖动漂移、瞬时性时延突变和持久性时延变化，分别分析各种变化原因，并且从数学统计方法的角度出发，对固有抖动漂移和瞬时性突变提出基于”线性回归模型“的“时延估计”方法，把历史实验数据作为样本序列，通过回归建模来进行时延估计，从而减小时延抖动或突变对同步精度带来的不良影响；对持久性时延变化，提出基于”固定滑动时间窗实时监控“的方法来及早发现持久性变化，并立即通过“样本失效”手段来快速消除持久性变化对“样本序列”及“时延估计”所带来的波动。基于以上本人所提出的算法来保证时延的稳定性、准确性和可靠性。
+	\item 从时钟校正的控制策略：
+针对从时钟校正策略，本文首先会分析两种应用较为普遍的控制策略：直接校正；pi控制器校正。深入分析这两种策略的优劣。同时，结合本人上文中所采用的数学统计方法，我们会得到一定数量的时延样本，利用这些样本数据，本人会提出第三种从时钟控制策略：“基于BP神经网络的PID控制器校正策略”。这种策略可以利用我们累计的“原始延时样本”来对神经网络进行训练，而神经网络的输出便是PID三个控制参数。
+\end{itemize}
+
+在文章后面，本人会在深入研究所提出的控制算法之后，通过在自己搭建的基于state flow的matlab仿真平台上，分别测试了上述所提的“时延估计”与“神经网络PID控制”算法，根据最终试验结果可以看出确实能够提高同步精度，而且使得从时钟同步过程更加快速和稳定。
+
+\section{论文安排}
+以下是本论文的结构安排。
+
+第一章阐述课题背景，需要解决的问题，并且介绍本文主要研究的内容。
+
+第二章介绍1588同步协议的运行原理，同时在最后介绍1588协议在实际运行中遇到的一些不可避免的问题，及对于这些问题的已有研究成果。
+
+第三章从网络传输延时的角度来进行分析，并且提出结合数学统计与实时监控相结合的方法来保证延时数据的稳定性、准确性和可靠性。在该章节会介绍相关的数学统计方法，例如线性回归、基于线性核方法 RBF核方法进行回归建模等。除此之外，本人还会提出一套完整的滑动时间窗延时实时监控方案，用以区分‘瞬时性’延时和‘持久性’延时，并在此基础上提出不同的处理方案。从而保证从时钟的稳定性。
+
+第四章从从时钟校正的角度来进行深入研究，首先分析直接校正、pi控制器校正两种方法的原理及优缺点，同时根据这些优缺点，本人提出了基于BP神经网络的智能控制算法来进行PID控制。首先会介绍BP神经网络概念及其原理、应用场景，然后会提出具体的数学方法来在从时钟校正上实现一套较为完整的基于BP神经网络的控制算法，通过原始延时样本对神经网络进行训练，最后通过该算法得出的pid参数进行调节。同时会利用自主搭建的1588仿真平台上进行实验验证，并对这三种控制方法的控制效果进行比较。从而得出较为完善的控制方法来校正从时钟。
+
+第五章会从硬件实现的角度，介绍我们自己交换机的硬件实现方案。
+
+第六章对本文进行总结和展望。
 
