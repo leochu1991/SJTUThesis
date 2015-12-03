@@ -30,6 +30,19 @@ IEEE1588协议全名为：IEEE Standard for a Precision Clock Synchronization Po
 当系统在启动之初，所有系统内部的时钟会对外发布Announce报文，该报文会包含自身时钟的与精度相关的特性。与此同时，所有时钟也会接受其他时钟发送过来的Announce报文，即接收到其他报文传递来的精度信息。
 
 然后，每个端口内部会依据这些精度相关的数据集，在本地首先通过数据集比较算法，从而比较出两组数据的优劣，其中一组是时钟自身的缺省特性，另一组是来自外界其他时钟传递过来的数据。完成了数据集比较之后，会依靠比较结果继续执行状态决定算法。该算法会结合端口状态机规则及数据集比较结果来设置自身端口的主从状态。至此，每个时钟便已设置好了自身的主从状态，这其中最高级的主时钟便自动成为了Grand Master Clock。
+\\
+\\
+
+具体拓扑结构可以参考下图：
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{ptp_topo}
+    \bicaption[fig:longcaptiongood]{PTP时钟同步拓扑结构}{PTP时钟同步拓扑结构}{Fig}{The topology of PTP Time-Sync System}
+  \end{minipage}     
+\end{figure}
 
 \subsubsection{数据集比较算法}
 数据集比较算法主要通过下列时钟属性来进行比较，且从上往下优先级逐渐降低：
@@ -62,7 +75,17 @@ IEEE1588协议全名为：IEEE Standard for a Precision Clock Synchronization Po
 
 \subsection{时钟同步算法}
 \label{sec:1588_theory_sync}
-————插入时钟同步图片
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{process_of_time_sync}
+    \bicaption[fig:longcaptiongood]{时钟同步算法流程图}{时钟同步算法流程图}{Fig}{Method of Time Sync}
+  \end{minipage}     
+\end{figure}
+
+－－介绍时钟同步算法
 
 \section{IEEE1588协议实现及分析}
 上文中介绍了IEEE1588协议的理论部分，包括主从秩序建立和时钟同步过程。下文会简明扼要地介绍IEEE1588的具体实现过程及相关因素。
@@ -94,7 +117,15 @@ PTP协议中的报文分两类，事件（Event）报文和一般（General）�
 下面分报文头部和报文主体格式进行简单介绍。
 所有PTP报文头格式一致，如下图：
 
-————插入报文头格式图片
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{ptp_message_header}
+    \bicaption[fig:longcaptiongood]{PTP报文头部格式}{PTP报文头部格式}{Fig}{The Style of PTP message Header}
+  \end{minipage}     
+\end{figure}
 
 其中，各字段含义如下：
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
@@ -110,6 +141,15 @@ PTP协议中的报文分两类，事件（Event）报文和一般（General）�
 
 \subsubsection{PTP报文主体格式}
 PTP报文主体主要包括了时间戳信息：NanosecondsField和SecondsField，分别表示时间戳的秒部分和纳秒部分。
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{ptp_message_content}
+    \bicaption[fig:longcaptiongood]{PTP报文主体格式}{PTP报文主体格式}{Fig}{The Style of PTP message Content}
+  \end{minipage}     
+\end{figure}
 
 \subsection{PTP报文传输周期及其对同步过程的影响分析}
 在同步过程中，最重要的便是offset值和delay值的计算，这直接涉及到同步结果的准确性和稳定性；另外还有最初主从秩序建立的快速性也非常重要。所以，下面简单介绍相关的时间周期和超时事件，并分析其对同步过程的影响。
