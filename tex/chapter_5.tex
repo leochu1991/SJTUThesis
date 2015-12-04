@@ -4,8 +4,107 @@
 %%==================================================
 
 \chapter{基于stateflow的PTP时钟同步仿真系统搭建及算法验证}
+为了能够对本论文中所提出的优化算法进行验证，本人在实验室师兄的基础上，继续利用stateflow工具，搭建并优化了基于IEEE1588协议的时钟同步系统。为了能够实现仿真验证，该系统中创建了三台ptp时钟，包括两个普通时钟和一个边界时钟，其中一个普通时钟扮演Grand Master的角色，另一个时钟扮演从时钟角色。边界时钟在二者中间，与GM时钟进行同步，同时向从时钟发送Sync报文，最终达到三者处于同步。
+
+下面仅对该仿真系统中比较重要的部分进行介绍，同时利用该系统来进行仿真验证上文所提算法。
 
 \section{仿真系统搭建及介绍}
+Simulink Stateflow工具箱是matlab平台上的一种可视化建模工具，对于状态机、流程图等的创建，或者对PTP时钟同步系统之类事件驱动系统进行建模仿真具有非常良好的应用性。
+
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{1\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{simulation_clock_model}
+    \bicaption[fig:simulation_clock_model]{基于stateflow的ptp时钟仿真模型}{基于stateflow的ptp时钟仿真模型}{Fig}{The Simulation model of ptp clock based on stateflow}
+  \end{minipage}     
+\end{figure}
+
+图\ref{fig:simulation_clock_model}中是我们利用stateflow在matlab平台上搭建的单个ptp时钟。该时钟具备两个端口，下面对其中与本文算法相关的一些模块进行简要地介绍，其他模块只给出实现图，不作过多赘述。
+
+\subsection{本地时钟模块}
+本地时钟模块：该模块为时钟模块提供本地时钟，对同步系统而言，我们就是要让从时钟的本地时钟模块能够在算法校正后实现与主时钟本地时钟模块保持一致，才算达到良好的同步效果。在实际系统中为晶振驱动，在我们的仿真模型中，使用脉冲生成器来驱动，在每个脉冲上升沿处使的脉冲计数器加pulseCount值，另外设rate值来调节本地时钟精度。例如，使用的脉冲器为100MHz，那么脉冲计数器pulseCount每次累加10ns，如果我们用rate＝100，那么表示每100个10ns对应1个时钟clock，即1微秒。我们用clockCount来表示本地时钟，每产生一个clock就使clockCount加1。另外，由于真实的时钟还存在频率偏差，为了模仿这种情况，我们再给pulseCount添加一个偏差值，frequncyOffset，即：
+\begin{align}
+	clockCount = (pulseCount + frequncyOffset) / rate
+\end{align}
+对于该频率偏差frequncyOffset，我们应该用时钟伺服系统来进行校正。
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{1\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{simulation_local_clock}
+    \bicaption[fig:simulation_local_clock]{本地时钟仿真模型}{本地时钟仿真模型}{Fig}{The Simulation model of Local Clock}
+  \end{minipage}     
+\end{figure}
+
+\subsection{定时器模块}
+由于同步系统中存在很多中定时触发或超时事件，例如Sync报文的周期性发送，Announce报文的超时等待事件等。所以，我们添加了这个模块，为系统中所有周期性或有超时发生的事件进行触发。
+
+下图是Announce超时事件定时器模块作为参考，其他定时器模块与之非常类似。
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{1\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{simulation_announce_timeout_timer}
+    \bicaption[fig:simulation_announce_timeout_timer]{Announce报文超时事件定时器仿真模型}{Announce报文超时事件定时器仿真模型}{Fig}{The Timer model for Announce message receipt timeout}
+  \end{minipage}     
+\end{figure}
+
+\subsection{最佳主时钟算法及状态机模块}
+该模块主要用于根据外部报文数据集来计算并调整本地时钟端口的状态。由于与本文算法关系不大，故不作深入介绍，下为实现图。具体原理可参考上文中的算法介绍。
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{1\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{simulation_dataset_comparision}
+    \bicaption[fig:simulation_dataset_comparision]{数据集比较模块仿真模型}{数据集比较模块仿真模型}{Fig}{The model for dataset comparision}
+  \end{minipage}     
+\end{figure}
+
+\subsection{报文收发模块}
+该模块主要包括每个时钟内部对外的收发报文。对于接收模块，它会时钟监听某外部信号，一旦有报文传入则会立即触发系统进入报文接受流程，该流程会讲所收到报文的数据全部存储到本地，同时向系统中发出报文接受完成信号。对于发送模块，会先把数据根据对应报文格式组装成对应的报文，把数据存入该报文中，然后从时钟对应的端口发出。
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{1\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{simulation_message_receive}
+    \bicaption[fig:simulation_message_receive]{报文接收模块仿真模型}{报文接收模块仿真模型}{Fig}{The model for receiving message}
+  \end{minipage}     
+\end{figure}
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{1\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{simulation_message_send}
+    \bicaption[fig:simulation_message_send]{报文发送模块仿真模型}{报文发送模块仿真模型}{Fig}{The model for sending message}
+  \end{minipage}     
+\end{figure}
+
+\subsection{时钟伺服模块}
+这个模块是本节的重点，因为我们的延时统计优化方法和基于神经网络的PID控制策略都是在这个模块中实现的。下面为该模块的外观图，内部主要功能为，获取接受到的链路延时信息，采用统计的方法去计算较为精确的链路延时数据，然后把相关的延时数据传递给神经网络系统中，利用神经网络输出的三个控制参数来对PID控制器进行调解，最后用pid对从时钟本地时钟的相位和频率进行校正。
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{1\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{simulation_clock_servo_system}
+    \bicaption[fig:simulation_clock_servo_system]{时钟伺服模块仿真模型}{时钟伺服模块仿真模型}{Fig}{The model of clock servo system}
+  \end{minipage}     
+\end{figure}
+
+\section{算法仿真验证思路}
+在上面本人将所搭建的完整的仿真系统进行了简明扼要的介绍。为了验证本文所提的优化算法，本人会在整个同步系统外部，我们会通过监听主时钟和从时钟的时钟偏差曲线，从而可以知道该同步系统的同步性能。主要的比较指标有下面两点：
+\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+	\item 偏差值：通过观察主从时钟的偏差值，可以看出该同步系统的同步效果，这也能直接反映真实的同步精度。因此，我们可以以此来检测同步系统中链路延时抖动和“暂时性”抖动对同步精度造成的影响。
+	\item 鲁棒性：当系统中发生“持久性”时延变化，那么会造成从时钟发生较大的抖动，所以，我们可以依据此来检测针对“持久性”时延变化的优化算法的效果，如果该优化算法能够使的从时钟的抖动减小，那么表示从时钟的鲁棒性得到了提高。
+	\item 收敛速度及稳定性：我们可以通过观察主从偏差的波动值，并计算其收敛时间。尤其是在链路环境发生变化，即类似工业环境中的多种复杂因素导致系统不稳定，以此来观察系统的收敛速度和最终的稳定性，从而来判断本文提出的基于神经网络的PID控制器的效果。
+\end{itemize}
 
 \section{对链路时延的数学统计算法验证}
 
