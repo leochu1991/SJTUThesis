@@ -58,6 +58,28 @@ IEEE1588协议全名为：IEEE Standard for a Precision Clock Synchronization Po
 
 在该比较算法中，会依次从上往下比较各个属性，只要发现一方的某个属性优于另一方，则立即成为主时钟，并停止数据集比较。当一个子网里各条路径的主时钟都进行了数据集比较算法，那么其中的最佳主时钟就称为了Grand master Clock。
 
+可参考图\ref{fig:dataset_comparison_1}和\ref{fig:dataset_comparison_2}所示：
+
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.8\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=12cm]{dataset_comparison_1}
+    \bicaption[fig:dataset_comparison_1]{数据集比较算法Part1}{数据集比较算法Part1}{Fig}{The Dataset Comparsion algorithm Part 1}
+  \end{minipage}     
+\end{figure}
+
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{dataset_comparison_2}
+    \bicaption[fig:dataset_comparison_2]{数据集比较算法Part2}{数据集比较算法Part2}{Fig}{The Dataset Comparsion algorithm Part 2}
+  \end{minipage}     
+\end{figure}
+
 \subsubsection{状态决定算法}
 从上文中可以知道在建立主从秩序时必须依靠数据集比较算法来计算各端口的主从状态，但是，网络内各时钟状态并非一成不变的。假设增加了新的时钟，或者某从时钟自身的精度提高了，此时便需要重新计算各自的状态，所以需要通过状态决定算法在网络运行过程中实时动态地更新各端口状态。
 
@@ -73,19 +95,73 @@ IEEE1588协议全名为：IEEE Standard for a Precision Clock Synchronization Po
 
 网络内各节点都会据此执行状态决定算法，最终系统内所有时钟都动态地更新各自的状态。
 
+可参考图\ref{fig:state_decision}所示。
+
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.8\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=12cm]{state_decision}
+    \bicaption[fig:state_decision]{状态决策算法}{状态决策算法}{Fig}{The State Decision Algorithm}
+  \end{minipage}     
+\end{figure}
+
+
 \subsection{时钟同步算法}
 \label{sec:1588_theory_sync}
+在图\ref{fig:process_of_time_sync}中，我们可以看到较为完整的时钟同步过程。下面，对时钟同步过程及相关计算做简明扼要地介绍。
+
 \begin{figure}[!hbp]
   \centering
   \begin{minipage}[b]{0.6\textwidth}
     \captionstyle{\centering}
     \centering
     \includegraphics[width=10cm]{process_of_time_sync}
-    \bicaption[fig:longcaptiongood]{时钟同步算法流程图}{时钟同步算法流程图}{Fig}{Method of Time Sync}
+    \bicaption[fig:process_of_time_sync]{时钟同步算法流程图}{时钟同步算法流程图}{Fig}{Method of Time Sync}
   \end{minipage}     
 \end{figure}
 
-－－介绍时钟同步算法
+首先，主时钟会周期性对外发送Sync报文，当该报文离开主时钟时会记录时间戳为t1，若采用硬件时间戳标记的方式则直接把该时间戳存入Sync报文，则无需后续的Follow\_up报文了。
+
+然后，当从时钟接收到Sync报文时，会将接收时间标记为t2。此时，从时钟即获得了Sync报文的发送与接收时间戳t1和t2。那么假设主从时间偏差为$T_{offset}$，主从时钟间网络传输时间为$T_{delay}$，则可以得到下面式子：
+\begin{align}
+	T_{offset} + T_{delay_1} = t2 - t1
+\end{align}
+
+另外，从时钟还会周期性向主时钟发送Delay\_Req报文，假设发送时间为t3，当主时钟收到该报文时，会立即记录下Delay\_Req报文的接收时间t4，并把该接收时间t4存入Delay\_Resp报文中传递回该从时钟。那么此时，从时钟会得到t3和t4两个时间，可得到下面式子：
+\begin{align}
+	T_{delay_2} - T_{offset} = t4 - t3
+\end{align}
+
+此时，我们根据协议标准中，将往返传输延时视为对称，即：
+\begin{align}
+	T_{delay_1} = T_{delay_2} = T_{delay}
+\end{align}
+所以，我们结合上面几个式子可以得到如下结果：
+\begin{align}
+	T_{delay} = \frac{(t2 - t1) + (t4 - t3)}{2}
+\end{align}
+\begin{align}
+	T_{offset} = \frac{(t2 - t1) - (t4 - t3)}{2}
+\end{align}
+
+通过上面的计算方法，我们可以得到主从时钟之间的相位偏差$T_{offset}$。然后，我们还需要计算主从时钟的时钟频率偏差才能实现完整的时钟同步。
+
+为了计算时钟频率偏差，我们可以采用下面的方法来计算。我们知道，主时钟是隔固定的周期相从时钟发送Sync报文的，所以，对主时钟而言，第i个Sync报文和第(i+1)个Sync报文之间的发送间隔为：
+\begin{align}
+	\Delta _{master} = T_{m}(k + 1) + T_{delay}(k + 1) - (T_{m}k - T_{delay}k)
+\end{align}
+对于从时钟而言，两个Sync报文的时间间隔为：
+\begin{align}
+	\Delta _{slave} = T_{s}(k + 1) - T_{s}k
+\end{align}
+
+所以，我们可以利用上述的比例关系来得到主从时钟的频率偏差。
+\begin{align}
+	\Delta F = \frac{\Delta _{master}}{\Delta _{slave}}
+\end{align}
+只需要调节从时钟本地频率扩大$\Delta F$倍就可以实现主从时钟频率一致。
 
 \section{IEEE1588协议实现及分析}
 上文中介绍了IEEE1588协议的理论部分，包括主从秩序建立和时钟同步过程。下文会简明扼要地介绍IEEE1588的具体实现过程及相关因素。
@@ -102,7 +178,43 @@ IEEE1588系统是由PTP设备和非PTP设备结合而成的分布式网络化系
 \end{itemize}
 
 \subsection{PTP时钟端口状态及状态机原理}
----
+对于一个ptp时钟设备，一般而言它会包含一个或多个端口，每个端口具备自己的状态且相互独立，它们各自的状态都由时钟自身的协议引擎来计算并赋予给它们，而且，处于不同状态的端口对外会有不同表现。
+
+端口状态主要包括以下九种：
+\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+	\item Initializing：初始化状态。在时钟启动时，端口会进入该状态，此时会完成端口数据集、硬件等多种初始过过程。
+	\item Listening：监听状态。该状态表示端口正在监听来自主时钟的Announce报文，而且该状态会有超时时间，即如果在固定时间内仍未收到Announce报文则发生超时。此时会根据状态机规则进入其他状态。
+	\item Disabled：禁止状态。若端口处于该状态，则不会对外发送任何ptp报文。
+	\item Faulty：故障状态。该状态表明端口故障，不会影响其他端口正常运行。
+	\item Uncalibrated：这种状态表明该时钟的所有端口检测到了一个或多个外界主时钟，而且已经从其他端口处选择了主时钟，如果当前端口也检测到了主时钟，为了不发生多个主时钟的问题，当前端口会进入该状态。
+	\item Master：作为主时钟，对外界发送同步报文。
+	\item Pre\_Master：即刚进入时钟同步系统且未收到任何主时钟的报文，那么会暂时进入该状态，但是此时并不会对外发送同步报文。
+	\item Slave：从状态，接受外界主时钟的同步报文并对本地时钟进行同步。
+	\item Passive：被动状态。
+\end{itemize}
+
+下图\ref{fig:port_state_flow}为时钟端口状态机，每个端口的状态变化都会依据该状态机规则进行。
+
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{port_state_flow}
+    \bicaption[fig:port_state_flow]{端口状态机}{端口状态机}{Fig}{PTP posrState machines}
+  \end{minipage}     
+\end{figure}
+
+下面，将状态机中比较重要的状态转换事件做简要介绍，不作深入研究。
+\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+	\item POWERUP事件：表示节点上电或者复位。
+	\item INITIALIZE事件：表示端口收到了INITIALIZE管理报文等。
+	\item FAULT\_DETECTED事件：表示程序在运行过程中，用来阻止协议正确运行的事件。
+	\item STATE\_DECISION\_EVENT事件：状态决定事件，即当端口收到有效的Announce报文时会触发该事件，此时将调用BMC最佳主时钟算法来决定各个端口应该进入的状态。
+	\item QUALIFICATION\_TIMEOUT\_EXPORES事件：表示端口维持在Pre\_Master状态的时间间隔，其中，qualificationTimeoutInterval一般是Announce报文发送周期的整数倍。
+	\item ANNOUNCE\_RECEIPT\_TIMEOUT\_EXPIRES事件：该事件表示端口在规定时间内没有收到Announce报文，即发生超时事件。
+\end{itemize}
+
 \subsection{PTP报文介绍}
 \subsubsection{PTP报文类型}
 PTP协议中的报文分两类，事件（Event）报文和一般（General）报文。下面简单介绍本文使用最多的几种报文。
@@ -115,18 +227,7 @@ PTP协议中的报文分两类，事件（Event）报文和一般（General）�
 
 \subsubsection{PTP报文头部格式}
 下面分报文头部和报文主体格式进行简单介绍。
-所有PTP报文头格式一致，如下图：
-
-\begin{figure}[!hbp]
-  \centering
-  \begin{minipage}[b]{0.6\textwidth}
-    \captionstyle{\centering}
-    \centering
-    \includegraphics[width=10cm]{ptp_message_header}
-    \bicaption[fig:longcaptiongood]{PTP报文头部格式}{PTP报文头部格式}{Fig}{The Style of PTP message Header}
-  \end{minipage}     
-\end{figure}
-
+所有PTP报文头格式一致，如下图\ref{fig:ptp_message_header}。
 其中，各字段含义如下：
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
 	\item transportSpecific：标记下一层协议类型，用来区分UDP/IPv6、UDP/IPv4和IEEE802.3；
@@ -139,17 +240,41 @@ PTP协议中的报文分两类，事件（Event）报文和一般（General）�
 	\item sourcePortIdentity：标记发送报文的源端口号，由设备ID及端口ID组成。
 \end{itemize}
 
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{ptp_message_header}
+    \bicaption[fig:ptp_message_header]{PTP报文头部格式}{PTP报文头部格式}{Fig}{The Style of PTP message Header}
+  \end{minipage}     
+\end{figure}
+
 \subsubsection{PTP报文主体格式}
-PTP报文主体主要包括了时间戳信息：NanosecondsField和SecondsField，分别表示时间戳的秒部分和纳秒部分。
+PTP报文中的Sync和Req\_Delay两种报文主体主要包括了时间戳信息：NanosecondsField和SecondsField，分别表示时间戳的秒部分和纳秒部分。
 \begin{figure}[!hbp]
   \centering
   \begin{minipage}[b]{0.6\textwidth}
     \captionstyle{\centering}
     \centering
     \includegraphics[width=10cm]{ptp_message_content}
-    \bicaption[fig:longcaptiongood]{PTP报文主体格式}{PTP报文主体格式}{Fig}{The Style of PTP message Content}
+    \bicaption[fig:longcaptiongood]{PTP报文主体格式}{PTP报文主体格式}{Fig}{The Structure of Sync Req\_Delay message content}
   \end{minipage}     
 \end{figure}
+
+另外，对于Announce报文，其主体内容如图\ref{fig:ptp_announce_message_content}所示：
+
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{ptp_announce_message_content}
+    \bicaption[fig:ptp_announce_message_content]{Announce报文主体格式}{Announce报文主体格式}{Fig}{The Structure of Announce message content}
+  \end{minipage}     
+\end{figure}
+
+其中，grandmasterPriority1、grandmasterClockQuality、grandmasterPriority2和grandmasterIdentity等数据都是用来表示Grand Master的时钟质量，对外发送以让其他时钟能够进行数据集比较算法，然后依靠端口状态变化规则来建立整个系统的主从状态。
 
 \subsection{PTP报文传输周期及其对同步过程的影响分析}
 在同步过程中，最重要的便是offset值和delay值的计算，这直接涉及到同步结果的准确性和稳定性；另外还有最初主从秩序建立的快速性也非常重要。所以，下面简单介绍相关的时间周期和超时事件，并分析其对同步过程的影响。

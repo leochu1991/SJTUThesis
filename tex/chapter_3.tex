@@ -38,9 +38,17 @@ P(X_{k} = n) = \frac{n\lambda\Delta t e^{- \lambda\Delta t}}{n!},n\geq 0;
 所以说，报文在以太网中传输会带有固有抖动，这也导致往返的链路延时不一定对称。
 
 \subsection{网络拓扑结构变化}
-一般的拓扑结构如下
+一般的拓扑结构如图\ref{fig:1588_sync_topology}所示：
 
-－－－插入图P31 分布式实时系统结构图
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{1588_sync_topology}
+    \bicaption[fig:1588_sync_topology]{分布式同步系统结构图}{分布式同步系统结构图}{Fig}{The Structure of distributed sync system}
+  \end{minipage}     
+\end{figure}
 
 假如同步系统中由于环路结构的快速重配置等原因导致链路的拓扑结构发生改变，那么肯定会导致报文传输的往返延时完全不同，而这也导致计算出来的延时值与实际值有很大偏差。然而，在现有的IEEE1588协议中，并没有很好的去探测链路结构的变化并针对性做出处理。而这一点，也正是本人下文中所针对的一个重点研究内容，并在下文中提出了相关的基于历史延时样本的应对措施。
 
@@ -116,7 +124,15 @@ E(T_{j}(i)) = 0
 \subsection{最小二乘法介绍}
 根据维基百科的定义\footnote{\url{https://zh.wikipedia.org/wiki/\%E6\%9C\%80\%E5\%B0\%8F\%E4\%BA\%8C\%E4\%B9\%98\%E6\%B3\%95}}，最小二乘法（又称最小平方法）是一种数学优化技术，它通过最小化误差的平方和寻找数据的最佳函数匹配。利用最小二乘法可以简便地求得未知的数据，并使得这些求得的数据与实际数据之间误差的平方和为最小。
 
-－－－最小二乘回归直线示例图
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{least_square_method}
+    \bicaption[fig:least_square_method]{最小二乘法线性回归示意图}{最小二乘法线性回归示意图}{Fig}{The Least Square Method}
+  \end{minipage}     
+\end{figure}
 
 \subsection{最小二乘算法实现}
 在从时钟处，我们会不断收集离散的时延样本数据($t_{i}$, $D_{i}$)(i=1, 2, 3 $\cdots$)，其中，$D_{i}$表示在从时钟$t_{i}$时刻获得的时延值。

@@ -14,9 +14,18 @@
 因此，为了提高从时钟校正过程的实时性和快速性，我们需要设计一套比较良好的时钟伺服系统来对从时钟进行校正。
 
 \subsection{通用PTP时钟伺服系统介绍}
-－－－插图，时钟伺服系统
 
-一种常见的PTP时钟伺服系统如图所示。从左到右表明了数据从PTP协议引擎逐渐流向从时钟。在该系统中，PTP协议引擎通过周期性获取主从偏差和从主偏差，将这两个偏差值通过均值滤波及低通滤波器获取到当前offset值。然后，将当前offset值与采样周期数据共同传递给PI控制器，由PI控制器来对从时钟进行校正以实现主从同步。该PI控制器由比例（P）和积分（I）两个环节共同构成，其中，比例环节可以用来消除主从时钟间的相位偏差，而积分项则可以用来消除系统的稳态误差，即消除主从时钟间的频率差。
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.7\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=11cm]{normal_clock_servo_system}
+    \bicaption[fig:normal_clock_servo_system]{通用PTP时钟伺服系统}{通用PTP时钟伺服系统}{Fig}{The normal structure of general PTP clock servo system}
+  \end{minipage}     
+\end{figure}
+
+一种常见的PTP时钟伺服系统如上图\ref{fig:normal_clock_servo_system}所示。从左到右表明了数据从PTP协议引擎逐渐流向从时钟。在该系统中，PTP协议引擎通过周期性获取主从偏差和从主偏差，将这两个偏差值通过均值滤波及低通滤波器获取到当前offset值。然后，将当前offset值与采样周期数据共同传递给PI控制器，由PI控制器来对从时钟进行校正以实现主从同步。该PI控制器由比例（P）和积分（I）两个环节共同构成，其中，比例环节可以用来消除主从时钟间的相位偏差，而积分项则可以用来消除系统的稳态误差，即消除主从时钟间的频率差。
 
 上述这样一套较为完整的时钟伺服系统可以较好的实现时钟同步，而且，由于传统的PI控制算法相对而言比较简单、鲁棒性良好且可靠性较高，所以传统的PI控制器在工业控制领域里应用十分广泛。
 
@@ -43,7 +52,17 @@
 \subsubsection{神经网络基本原理及构造}
 神经网络作为模拟人的思维方式，用以实现多位数据的表示，其内部单元大都使用结构简单的神经元模型，通过内部神经元之间的相互关联及权值修正来实现对多维数据的非线性处理。
 
-在一套完整的神经网络结构中，一般会包含多个不同的网络层单元，即下列几个网络层：
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{neural_network}
+    \bicaption[fig:neural_network]{神经网络结构图}{神经网络结构图}{Fig}{The structure of neural network}
+  \end{minipage}     
+\end{figure}
+
+根据图\ref{fig:neural_network}可以看到神经网络的整体结构，在一套完整的神经网络结构中，一般会包含多个不同的网络层单元，即下列几个网络层：
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
 	\item 输入层（Input Layer）：这一层的输入节点主要对应外部数据的特征变量，为了能够有效地描述外界事物，我们需要对研究对象选择特定且有意义的原始特征变量，或者称为特征空间。所以说，这一层中会有大量神经元接受外界复杂的非线性输入信息。
 	\item 隐含层（Hidden Layer）：这一层是中间层，简称“隐层”，是输入层和输出层之间众多神经元和链接组成的各个层面。隐层可以有多层，习惯上会用一层。隐层的节点（神经元）数目不定，但数目越多神经网络的非线性越显著，从而神经网络的强健性（robustness）（控制系统在一定结构、大小等的参数摄动下，维持某些性能的特性。）更显著。习惯上会选输入节点1.2至1.5倍的节点。
@@ -133,11 +152,27 @@ f可以精确地用一个三层前馈神经网络来实现，从数学上保证�
 
 为了将神经网络算法应用于时钟伺服系统中，我们可以将神经网络与PID控制系统相结合，通过外界输入样本对神经网络进行训练，然后让神经网络对外输出PID控制系统所需要的三种控制参数$K_{i}$、$K_{p}$、$K_{d}$。可以参考下图的结构设计：
 
--- 基于BP神经网络的PID控制系统结构图
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{bp_neural_network_PID}
+    \bicaption[fig:bp_neural_network_PID]{基于BP神经网络的PID控制系统结构图}{基于BP神经网络的PID控制系统结构图}{Fig}{The structure combining BP neural network with PID controller}
+  \end{minipage}     
+\end{figure}
 
--- bp神经网络结构图
-
-下面将伺服系统分成前向传播过程和误差反向传播过程来分别讲述。
+\subsection{BP神经网络结构}
+下图\ref{fig:bp_neural_network}为BP\footnote{Back Propagation 误差反向传播}神经网络结构图，从左往右依次为输入层、隐含层、输出层，下文将依据该结构，将伺服系统分成前向传播过程和误差反向传播过程来分别讲述。
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{BP_neural_network}
+    \bicaption[fig:bp_neural_network]{BP神经网络结构图}{BP神经网络结构图}{Fig}{The structure of BP neural network}
+  \end{minipage}     
+\end{figure}
 
 \subsection{前向计算过程}
 该过程是指输入变量依次经过输入层、隐含层直到输出层的过程。首先，对于输入层，我们可以选取k个主从偏差样本作为神经网络的输入。该样本个数k若太大，则会导致训练时间过长，系统需要较长时间的收敛过程；反之，若样本个数$K_{i}$太小，则会导致达不到学习效果。在此，本人将$K_{i}$选取为4。所以，输入层的输入为：
