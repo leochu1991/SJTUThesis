@@ -33,9 +33,9 @@
 \begin {align}
 P(X_{k} = n) = \frac{n\lambda\Delta t e^{- \lambda\Delta t}}{n!},n\geq 0;
 \end{align}
-然而，Vern Paxson\supercite{13}、Water Willinger\supercite{14}、Will Leland\supercite{15}及J.Beran\supercite{16}等人通过试验测量分析认为，网络流量序列在很宽的时间尺度内存在突发现象，或者说，Internet网络流量序列符合自相似特性，即样本均值的方差比样本个数的倒数减小得更慢。在此基础上，Qiong Li和David\supercite{17}又对于NTP\footnote{Network Time Protocol}时间包全程延时作了大量研究，Michael S.Borella\supercite{18}也利用两主机之间通过传送带时间标签的UDP包测量全程延时，他们都得到了相同的结论，即认为Internet网络流量及延时具有自相似特性。而以太网是构成Internet网的主要部分，所以我们有理由认为以太网网络流量及延时也具备自相似特性。
+然而，Vern Paxson\supercite{13}、Water Willinger\supercite{14}、Will Leland\supercite{15}及J.Beran\supercite{16}等人通过试验测量分析认为，网络流量序列在很宽的时间尺度内存在突发现象，或者说，Internet网络流量序列符合自相似特性，即样本均值的方差比样本个数的倒数减小得更慢。在此基础上，Qiong Li和David\supercite{17}又对于NTP\footnote{Network Time Protocol}时间包全程延时作了大量研究，Michael S.Borella\supercite{18}也利用两主机之间通过传送带时间标签的UDP包测量全程延时，他们都得到了相同的结论，即认为Internet网络流量及延时具有一定随机抖动。而以太网是构成Internet网的主要部分，所以我们有理由认为以太网网络流量及延时也具备随机抖动。
 
-所以说，报文在以太网中传输会带有固有抖动，这也导致往返的链路延时不一定对称。
+所以说，报文在以太网中传输会带有固有抖动，这也成为了往返链路延时不对称的因素之一。
 
 \subsection{网络拓扑结构变化}
 一般的拓扑结构如图\ref{fig:1588_sync_topology}所示：
