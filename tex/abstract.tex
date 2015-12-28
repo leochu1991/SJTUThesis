@@ -4,7 +4,7 @@
 %%==================================================
 
 \begin{abstract}
-在工业领域中，随着计算机通信技术的不断发展，越来越多的分布式系统被应用在了工业现场。而这些分布式系统由于物理范围的不断扩张和越来越多的实时性任务如数据采集、运行控制的需求，使得整个系统对于各个分布式节点的时钟同步精度提出了愈来愈高的要求。
+在工业领域中，随着计算机通信技术的不断发展，越来越多的分布式系统被应用在了工业现场。而这些分布式系统由于物理范围的不断扩张和越来越多的实时性任务如数据采集、远程控制的需求，使得整个系统对于各个分布式节点的时钟同步精度提出了愈来愈高的要求。
 
 所以，为了应对这些时钟同步需求，工业领域依次出现了不少时钟同步方法。例如GPS同步方法和NTP\footnote{网络时钟同步协议}、SNTP\footnote{简单网络时钟同步协议}等同步协议的出现。不过，由于工业现场中复杂的网络状况、工业时钟设备随环境变化和干扰而稳定性不高，而且网络报文传输中出现的随机时延变化等多种因素的存在，导致了实际同步精度并不理想，只能达到普通的毫秒级别。而GPS同步方法由于价格高昂和国防安全性的缺陷导致其无法长时间大面积应用于工业领域。
 
@@ -19,8 +19,16 @@
 
 \begin{englishabstract}
 
-Abstract 
+In the industrial field, with the continuous growth of computer communication technology, People started to apply more and more distributed system. As the physical scope of these systems are getting wider, and more real-time tasks, like data-collection and remote-control, appear, we have more strict requirement for the clock synchronization accuracy of the whole distributed nodes.
 
-\englishkeywords{\large Time Synchronization, IEEE1588, statistical method, clock servo system, stateflow}
+So, for meeting these clock synchronization requirements, serval clock-sync methods appear, such as the GPS synchronization technology、NTP and SNTP protocols. However, due to the complexity of industrial network、bad stability of industrial clock equipments, and the unpredictable message latency during transmitting process, We cannot acheieve ideal synchronization accuracy in reality, even worse the synchronization is only able to reach the normal millisecond level. Moreover, the GPS method is also not able to be applied widely in industrial field bacause of its high-cost and hidden danger of defense security.
+
+With this background, IEEE1588 precise time-synchronization protocol appears for persuing higher clock synchronization accuracy. IEEE1588 protocol is proposed in year 2002 by Network Clock Synchronization Committee, with the support of IEEE Standards Committee, and then promoted as the second version in year 2008. Compared with other previous synchronization methods, IEEE1588 has many improvements, such as the ease of deployment、better defense security and synchronization accuracy. Based on these reasons, I choose IEEE1588 as my reaserach target in this paper.
+
+However, In the industrial reality, we found there are still many problems in IEEE1588 protocol, and these problems lead directly to the unideal clock synchronization accuracy, which not only hamper the development of this protocol, but also make this clock synchronization requirement more strict and urgent. So in order to get the full ability of IEEE1588 in industrial field, I made deep reserach into this protocol, and by exploring deeply those factors which affect the synchronization accuracy, I decided to do more research from the math statistical perspective and finally proposed creatively a set of statistical methods for acheiving improvements, such as dynamic threshold method、real-time monitoring method based on fixed-window and so on. Taking time-letency as example, due to its randomness and unpredictability, We always have no ideal method to handle this. But in my paper, I will start from the statistical thought, and take the time latency data as samples and use several math methods to improve it. From the final simulink results, We can see these methods do improve the accuracy and stability clearly.What's more, In the fourth chapter, I explore the PID clock servo system based on Neural Network, trying to improve the robustness and adaptive for changing and complex industrial environment.
+
+At the last of this paper, I will introduce our own clock synchronization simulink system which is based on stateflow on matlab, and I also did the algorithm validation by this simulink system. From the simulink result we can see those methods, proposed by myself, do improve the accuracy and stablity of clock synchronization system. What's more, I believe my reserach result , which is coming from the perspective of math statistic, will inspire many other scholars and reserachers and provide them some thoughts and scientific basis.
+
+\englishkeywords{\large Clock Synchronization, IEEE1588, statistical method, clock servo system, stateflow}
 \end{englishabstract}
 
