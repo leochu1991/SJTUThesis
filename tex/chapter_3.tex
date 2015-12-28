@@ -184,6 +184,16 @@ E(a_{0}, a_{1}) = \sum_{i=0}^{m}(f(t_{i}) - D_{i})^{2}
 
 因此，下文中针对“暂时性”时延变化作出深入研究，并且提出“动态阈值法”来应对此类“暂时性”变化的发生。
 
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{matlab/时延暂时性突变曲线}
+    \bicaption[fig:curvewithtemporarychange]{时延暂时性突变曲线}{时延暂时性突变曲线}{Fig}{The Curve of time-delay with temporary change}
+  \end{minipage}     
+\end{figure}
+
 \subsection{“暂时性”时延变化特征研究}
 对于排队堵塞等因素导致的“暂时性”时延变化$T_{q}(i)$，我们通过上文的数学模型分析可知，该时延变化因素是偶然性的，而且一般持续时间比较短，不过一旦出现，往往会导致时延出现较大的波动。我们可以将此类误差定义为“暂时性阶跃噪声”，一方面表示其持续时间较短，另一方面表示排队现象一旦发生，很有可能导致延时出现较大波动。
 
@@ -252,6 +262,16 @@ G(d_{i}) = \left\{
 由上文可以看出，基于“最小二乘法”和“动态阈值法”可以有效的消除固定抖动噪声和“暂时性”阶跃噪声，改善了同步系统的精确性和鲁棒性。但是，如果发生由网络重配置等因素导致的拓扑结构变化时，就会导致链路传输时延的“持久性”变化，如果仅仅采用上述两种方法是无法有效应对此类变化的。
 
 根本原因在于，一旦发生“持久性”变化，则意味着历史延时样本均已经失效，不应该继续用于后续的时延估计中。然而，上述两种方法均依赖于历史延时样本，而且这两种方法均无法探测出“持久性”变化的发生。这样带来的直接后果就是：在时延已经完全变化后，同步系统仍然继续使用错误的历史延时样本数据去估计当前真实的延时，所计算出来的估计时延值一定会与真实时延存在很大偏差，而且这样的偏差要一直持续到右足够多的新样本替代旧有时延样本后才能逐渐消除。
+
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{matlab/时延持久性变化曲线}
+    \bicaption[fig:curvewithpersistentchange]{时延持久性变化曲线}{时延持久性变化曲线}{Fig}{The Curve of time-delay with persistent change}
+  \end{minipage}     
+\end{figure}
 
 显然，这会严重破坏系统的同步精度和稳定性。
 
