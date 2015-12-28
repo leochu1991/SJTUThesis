@@ -16,7 +16,7 @@ Simulink Stateflow工具箱是matlab平台上的一种可视化建模工具，�
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=10cm]{simulation_clock_model}
+    \includegraphics[width=11cm]{simulation_clock_model}
     \bicaption[fig:simulation_clock_model]{基于stateflow的ptp时钟仿真模型}{基于stateflow的ptp时钟仿真模型}{Fig}{The Simulation model of ptp clock based on stateflow}
   \end{minipage}     
 \end{figure}
@@ -34,7 +34,7 @@ Simulink Stateflow工具箱是matlab平台上的一种可视化建模工具，�
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=10cm]{simulation_local_clock}
+    \includegraphics[width=12cm]{simulation_local_clock}
     \bicaption[fig:simulation_local_clock]{本地时钟仿真模型}{本地时钟仿真模型}{Fig}{The Simulation model of Local Clock}
   \end{minipage}     
 \end{figure}
@@ -48,7 +48,7 @@ Simulink Stateflow工具箱是matlab平台上的一种可视化建模工具，�
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=10cm]{simulation_announce_timeout_timer}
+    \includegraphics[width=12cm]{simulation_announce_timeout_timer}
     \bicaption[fig:simulation_announce_timeout_timer]{Announce报文超时事件定时器仿真模型}{Announce报文超时事件定时器仿真模型}{Fig}{The Timer model for Announce message receipt timeout}
   \end{minipage}     
 \end{figure}
@@ -60,7 +60,7 @@ Simulink Stateflow工具箱是matlab平台上的一种可视化建模工具，�
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=10cm]{simulation_dataset_comparision}
+    \includegraphics[width=12cm]{simulation_dataset_comparision}
     \bicaption[fig:simulation_dataset_comparision]{数据集比较模块仿真模型}{数据集比较模块仿真模型}{Fig}{The model for dataset comparision}
   \end{minipage}     
 \end{figure}
@@ -72,7 +72,7 @@ Simulink Stateflow工具箱是matlab平台上的一种可视化建模工具，�
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=10cm]{simulation_message_receive}
+    \includegraphics[width=12cm]{simulation_message_receive}
     \bicaption[fig:simulation_message_receive]{报文接收模块仿真模型}{报文接收模块仿真模型}{Fig}{The model for receiving message}
   \end{minipage}     
 \end{figure}
@@ -81,7 +81,7 @@ Simulink Stateflow工具箱是matlab平台上的一种可视化建模工具，�
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=10cm]{simulation_message_send}
+    \includegraphics[width=12cm]{simulation_message_send}
     \bicaption[fig:simulation_message_send]{报文发送模块仿真模型}{报文发送模块仿真模型}{Fig}{The model for sending message}
   \end{minipage}     
 \end{figure}
@@ -90,10 +90,10 @@ Simulink Stateflow工具箱是matlab平台上的一种可视化建模工具，�
 这个模块是本节的重点，因为我们的延时统计优化方法和基于神经网络的PID控制策略都是在这个模块中实现的。下面为该模块的外观图，内部主要功能为，获取接受到的链路延时信息，采用统计的方法去计算较为精确的链路延时数据，然后把相关的延时数据传递给神经网络系统中，利用神经网络输出的三个控制参数来对PID控制器进行调解，最后用pid对从时钟本地时钟的相位和频率进行校正。
 \begin{figure}[!hbp]
   \centering
-  \begin{minipage}[b]{1\textwidth}
+  \begin{minipage}[b]{0.6\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=10cm]{simulation_clock_servo_system}
+    \includegraphics[width=3cm]{simulation_clock_servo_system}
     \bicaption[fig:simulation_clock_servo_system]{时钟伺服模块仿真模型}{时钟伺服模块仿真模型}{Fig}{The model of clock servo system}
   \end{minipage}     
 \end{figure}
@@ -182,7 +182,7 @@ Simulink Stateflow工具箱是matlab平台上的一种可视化建模工具，�
 
 可以发现，利用“实时动态监控算法”对“持久性”时延变化进行实时监控后，可以在系统中发生“持久性”时延变化后通过实时监控能够迅速发现该变化，然后采取相关措施后使得同步过程快速恢复正常，这提高了同步系统对外界变化的快速响应性。
 
-\section{对基于神经网络PID控制算法的验证}
+\section{对基于神经网络PID控制算法可行性的验证}
 在验证中，我们会随机模拟如时延抖动、排队堵塞等不良网络状况，以此检测算法在实际现场中遭遇到各种随机扰动后同步系统的运行效果。见对比图\ref{fig:添加多种抖动和时延变化后，采用“常规PI控制”与“神经网络PID控制策略”对比的同步曲线}。
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
   \item 采用固定参数的PI控制器校正策略的同步曲线
