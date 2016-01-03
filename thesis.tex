@@ -35,10 +35,12 @@
 
 \makeatletter
 \ifsjtu@submit\relax
-	\includepdf{pdf/original.pdf}
-	\cleardoublepage
-	\includepdf{pdf/authorization.pdf}
-	\cleardoublepage
+	\makeDeclareOriginal
+	\makeDeclareAuthorization
+	% \includepdf{pdf/original.pdf}
+	% \cleardoublepage
+	% \includepdf{pdf/authorization.pdf}
+	% \cleardoublepage
 \else
 	\makeDeclareOriginal
 	\makeDeclareAuthorization
@@ -106,6 +108,5 @@
 % \include{tex/resume}	  %% 各人简历
 \fi
 \makeatother
-
 
 \end{document}
