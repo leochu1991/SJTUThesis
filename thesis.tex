@@ -4,7 +4,7 @@
 %%==================================================
 
 % 双面打印
-\documentclass[master, fontset=adobe, openright, twoside, zihao=-4, submit]{sjtuthesis}
+\documentclass[master, fontset=adobe, openright, twoside, zihao=-4, review]{sjtuthesis}
 % \documentclass[bachelor, fontset=adobe, openany, oneside, zihao=-4, submit]{sjtuthesis} 
 % \documentclass[master, adobefonts, review]{sjtuthesis} 
 % \documentclass[%
@@ -56,10 +56,10 @@
 
 %% 目录、插图目录、表格目录
 \tableofcontents
-\listoffigures
-\addcontentsline{toc}{chapter}{\listfigurename} %将插图目录加入全文目录
-\listoftables
-\addcontentsline{toc}{chapter}{\listtablename}  %将表格目录加入全文目录
+% \listoffigures
+% \addcontentsline{toc}{chapter}{\listfigurename} %将插图目录加入全文目录
+% \listoftables
+% \addcontentsline{toc}{chapter}{\listtablename}  %将表格目录加入全文目录
 % \listofalgorithms
 % \addcontentsline{toc}{chapter}{代码索引}  %将表格目录加入全文目录
 
@@ -101,12 +101,14 @@
 %% 用于盲审的论文需隐去致谢、发表论文、申请专利、参与的项目
 \makeatletter
 \ifsjtu@review\relax\else
-  \include{tex/ack} 	  %% 致谢
-  \include{tex/pub}	  %% 发表论文
+  % \include{tex/ack} 	  %% 致谢
+  % \include{tex/pub}	  %% 发表论文
   % \include{tex/patents}	  %% 申请专利
   % \include{tex/projects}  %% 参与的项目
 % \include{tex/resume}	  %% 各人简历
 \fi
 \makeatother
+
+\include{tex/pub}	  %% 发表论文
 
 \end{document}

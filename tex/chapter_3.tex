@@ -124,16 +124,6 @@ E(T_{j}(i)) = 0
 \subsection{最小二乘法介绍}
 根据维基百科的定义\footnote{\url{https://zh.wikipedia.org/wiki/\%E6\%9C\%80\%E5\%B0\%8F\%E4\%BA\%8C\%E4\%B9\%98\%E6\%B3\%95}}，最小二乘法是一种数学优化方法，它是利用最小化误差的平方和来寻找数据的最佳函数匹配。在实际应用中，我们可以通过最小二乘法来求取未知的数据，并使这些所得数据与实际数据之间误差平方和达到最小。
 
-\begin{figure}[!hbp]
-  \centering
-  \begin{minipage}[b]{0.6\textwidth}
-    \captionstyle{\centering}
-    \centering
-    \includegraphics[width=10cm]{least_square_method}
-    \bicaption[fig:least_square_method]{最小二乘法线性回归示意图}{最小二乘法线性回归示意图}{Fig}{The Least Square Method}
-  \end{minipage}     
-\end{figure}
-
 \subsection{最小二乘算法实现}
 在从时钟处，我们会不断收集离散的时延样本数据($t_{i}$, $D_{i}$)(i=1, 2, 3 $\cdots$)，其中，$D_{i}$表示在从时钟$t_{i}$时刻获得的时延值。
 为了进行最小二乘线性回归，我们取离当前最近的m个样本值来进行处理，并取基1，t，进行线性回归拟合
