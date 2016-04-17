@@ -192,17 +192,17 @@ IEEE1588系统是由PTP设备和非PTP设备结合而成的分布式网络化系
 	\item Passive：被动状态。
 \end{itemize}
 
-% 下图\ref{fig:port_state_flow}为时钟端口状态机，每个端口的状态变化都会依据该状态机规则进行。
+下图\ref{fig:port_state_flow}为时钟端口状态机，每个端口的状态变化都会依据该状态机规则进行。
 
-% \begin{figure}[!hbp]
-%   \centering
-%   \begin{minipage}[b]{0.6\textwidth}
-%     \captionstyle{\centering}
-%     \centering
-%     \includegraphics[width=10cm]{port_state_flow}
-%     \bicaption[fig:port_state_flow]{端口状态机}{端口状态机}{Fig}{PTP posrState machines}
-%   \end{minipage}     
-% \end{figure}
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{port_state_flow}
+    \bicaption[fig:port_state_flow]{端口状态机}{端口状态机}{Fig}{PTP posrState machines}
+  \end{minipage}     
+\end{figure}
 
 下面，将状态机中比较重要的状态转换事件做简要介绍，不作深入研究。
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
@@ -302,6 +302,9 @@ PTP报文中的Sync和Req\_Delay两种报文主体主要包括了时间戳信息
 上述几种现象的存在，都会导致往返的两次延时不一致，所以说，在高同步精度的要求下，真实的传输延时绝对不能简单的假设相等。
 
 对于网络延时的研究，也正是本文的重点内容。本人在接下来的内容中，会对上述所提到的几种因素进行拆解分析，同时，从数学统计的角度，把所有历史延时数据作为样本，采用多个统计方法来对数据进行处理和消除干扰，从而得到稳定的同步数据。
+
+\subsection{主从时钟源频率漂移}
+由于主时钟在发送Sync报文时的偏差值Offset\_1与从时钟最后接收Delay\_Respo报文时的偏差值Offset\_2是不完全一致的，所以我们最终计算出来的offset并不完全等于真实的Offset\_2。所以这会导致同步精度变差。因此本人将利用上面的Sync报文统计样本，采用统计方法来计算主从时钟源频率偏差，从而对从时钟进行校正。
 
 \subsection{时间戳的精确度}
 \label{sec:1588_problem_2}
