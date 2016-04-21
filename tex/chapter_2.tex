@@ -3,18 +3,17 @@
 %% chapter_2.tex for SJTU Master Thesis
 %%==================================================
 
-\chapter{IEEE1588协议原理分析及相关研究}
+\chapter{IEEE1588协议原理分析研究}
 \label{chap:1588_theory}
 IEEE1588协议全名为：IEEE Standard for a Precision Clock Synchronization Portocol for Networked Measurement and Control Systems，也称为PTP精密时钟同步协议。PTP协议内部集成了多项分布式技术，如网络通信、局部计算和分布式对象等，对于所有支持多播局域网通信的分布式系统，尤其是以太网，都可以应用PTP协议来进行时钟同步。这可以在占用极少网络和本地计算资源的前提下，使得各类具有不同精确度、分辨率和稳定性的时钟同步且达到亚微秒级别的同步精度。
 
 由于当今测控系统中越来越多的依赖分布式系统技术，而分布式系统的性能又极其依靠所有分布式节点之间的时钟同步精度。所以，一套优秀且能达到微秒甚至亚微秒级别的时钟同步协议显得尤为迫切，而IEEE1588协议的出现给这种需求带来了重要的影响，在相关领域也得到了非常快速的发展。
 
-本章中会对IEEE1588时钟同步原理进行深入的分析研究，同时，本人也会对该协议中可能存在的一些严重问题进行分析，同时通过阅读文献来介绍关于这些问题的当今的一些研究理论成果，以期对IEEE1588协议原理及当前研究热点作一个较为立体而全面的分析。
+本章中会对IEEE1588时钟同步原理进行深入的分析研究，同时，也会对该协议中可能存在的一些严重问题进行分析，同时通过阅读文献来介绍关于这些问题的当今的一些研究理论成果，以期对IEEE1588协议原理及当前研究热点作一个较为立体而全面的分析。
 
-\section{IEEE1588协议同步机制}
+\section{IEEE1588时钟同步过程}
 一般而言，IEEE1588系统是由PTP设备和非PTP设备结合而成的分布式网络化系统。IEEE1588协议主要介绍的是系统中的实时PTP设备之间的相互同步方案，使得所有的从时钟能够与自己的主时钟同步，而所有主时钟又能够和同一个Grand Master时钟同步，最终达到整个系统中所有时钟保持同步。
 
-\section{时钟同步过程}
 首先，每个ptp时钟会有多个端口，当系统启动时，会立即开始主从秩序建立过程。该过程中，每个端口会对外发送Announce报文，同时通过检查所收到的Announce报文中的相关信息来判定哪个端口适合成为主时钟，被判定为主时钟的端口则会定期对外发送Sync报文。如果，一个判定为主时钟的端口收到了一个来自于更好的主时钟的Sync报文，那么该主时钟则会立即将自身的主时钟状态切换为从时钟状态。当然，如果一个处于从时钟状态的端口认为自己比当前主时钟更加好，那么它可以将自己设置为主时钟状态，并对外发送Sync报文。当所有端口通过互相比较时钟特性并建立了各自的主从状态后，则意味着主从秩序完成建立。如果此时新加入了一个时钟，那么该时钟首先会等待来自某一主时钟的Sync报文，若在规定的时间内没有收到任何主时钟的Sync报文，那么该时钟则将自身设置为主时钟，直到发现一个更好的主时钟。
 
 随后，则会进行时钟同步过程。该过程主要是主从时钟之间发送报文，使得每个从时钟计算出自身与主时钟之间的时钟偏差，并且对自身进行校正从而实现同步。首先主时钟会对外界进行周期性的Sync报文发送，多数情况下该报文会将离开主时钟的时间戳标记进去。当从时钟收到Sync报文后，则能够接受到发送时间戳并记录当前的接收时间戳。但是，仅仅依靠这两个时间戳还不能够计算出真实的主从偏差，因为对于从时钟而言它并不知道自身与主时钟之间的链路传输延时。所以，从时钟自身也会周期性向主时钟发送Delay\_Request报文，会通过接受主时钟回传的Delay\_Resopnse报文来共同计算出链路延时delay和主从偏差offset。最终利用offset对从时钟进行校正而实现同步。
@@ -23,18 +22,18 @@ IEEE1588协议全名为：IEEE Standard for a Precision Clock Synchronization Po
 
 \subsection{最佳主时钟算法}
 \label{sec:1588_theory_bmc}
-我们知道，ptp协议的核心是从时钟向主时钟同步从而最终实现整个系统时钟同步。所以，在真正的时钟同步之前，至关重要的一步便是建立全系统主从秩序，在该建立过程中，所有网络节点会通过“最佳主时钟算法（Best Master Clock Algorithm, BMC）”，选举出Grand Master Clock、主时钟、从时钟。其中，Grand Master Clock的精度最高，主时钟其次，从时钟最低。
+由于ptp协议的核心是从时钟向主时钟同步从而最终实现整个系统时钟同步。所以，在真正的时钟同步之前，至关重要的一步便是建立全系统主从秩序，在该建立过程中，所有网络节点会通过“最佳主时钟算法（Best Master Clock Algorithm, BMC）”，选举出Grand Master Clock、主时钟、从时钟。其中，Grand Master Clock的精度最高，主时钟其次，从时钟最低。
 
 下面进行简明扼要的最佳主时钟算法介绍。
 
 当系统在启动之初，所有系统内部的时钟会对外发布Announce报文，该报文会包含自身时钟的与精度相关的特性。与此同时，所有时钟也会接受其他时钟发送过来的Announce报文，即接收到其他报文传递来的精度信息。
 
 然后，每个端口内部会依据这些精度相关的数据集，在本地首先通过数据集比较算法，从而比较出两组数据的优劣，其中一组是时钟自身的缺省特性，另一组是来自外界其他时钟传递过来的数据。完成了数据集比较之后，会依靠比较结果继续执行状态决定算法。该算法会结合端口状态机规则及数据集比较结果来设置自身端口的主从状态。至此，每个时钟便已设置好了自身的主从状态，这其中最高级的主时钟便自动成为了Grand Master Clock。
-\\
-\\
 
 具体拓扑结构可以参考下图：
-\begin{figure}[!hbp]
+\\
+\\
+\begin{figure}[htbp]
   \centering
   \begin{minipage}[b]{0.6\textwidth}
     \captionstyle{\centering}
@@ -44,72 +43,9 @@ IEEE1588协议全名为：IEEE Standard for a Precision Clock Synchronization Po
   \end{minipage}     
 \end{figure}
 
-\subsubsection{数据集比较算法}
-数据集比较算法主要通过下列时钟属性来进行比较，且从上往下优先级逐渐降低：
-\begin{enumerate}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-	\item 优先权1（Priority 1）：若某时钟被人工设置为优先权1，则自从成为主时钟；
-	\item 层数（Stratum）：总有有0 － 4级，层数越高则时钟等级越低，成为主时钟；
-	\item 时钟标识符（Clock Identifier）：即时钟精度，包括nature、expected accuracy和epoch，精度高的成为主时钟；
-	\item 变量（Variance）：即时钟稳定性，值越大表示稳定性越差，值小的成为主时钟；
-	\item 距离（Distance）：即指自身与外部主时钟之间的无力距离，离外部主时钟近的称为主时钟；
-	\item UUID：代表节点唯一标识，UUID小的成为主时钟；
-	\item 端口号码（Port Number）：每个节点的数据集都包含一个端口号码，端口号码小的成为主时钟。
-\end{enumerate}
-
-在该比较算法中，会依次从上往下比较各个属性，只要发现一方的某个属性优于另一方，则立即成为主时钟，并停止数据集比较。当一个子网里各条路径的主时钟都进行了数据集比较算法，那么其中的最佳主时钟就称为了Grand master Clock。
-
-可参考图\ref{fig:dataset_comparison_1}和\ref{fig:dataset_comparison_2}所示：
-
-\begin{figure}[!hbp]
-  \centering
-  \begin{minipage}[b]{0.8\textwidth}
-    \captionstyle{\centering}
-    \centering
-    \includegraphics[width=12cm]{dataset_comparison_1}
-    \bicaption[fig:dataset_comparison_1]{数据集比较算法Part1}{数据集比较算法Part1}{Fig}{The Dataset Comparsion algorithm Part 1}
-  \end{minipage}     
-\end{figure}
-
-\begin{figure}[!hbp]
-  \centering
-  \begin{minipage}[b]{0.6\textwidth}
-    \captionstyle{\centering}
-    \centering
-    \includegraphics[width=10cm]{dataset_comparison_2}
-    \bicaption[fig:dataset_comparison_2]{数据集比较算法Part2}{数据集比较算法Part2}{Fig}{The Dataset Comparsion algorithm Part 2}
-  \end{minipage}     
-\end{figure}
-
-\subsubsection{状态决定算法}
-从上文中可以知道在建立主从秩序时必须依靠数据集比较算法来计算各端口的主从状态，但是，网络内各时钟状态并非一成不变的。假设增加了新的时钟，或者某从时钟自身的精度提高了，此时便需要重新计算各自的状态，所以需要通过状态决定算法在网络运行过程中实时动态地更新各端口状态。
-
-在状态决定算法中，每个节点具有四种状态：初始状态Init、Pre\_Master、Mater和Slave状态。算法如下：
-\begin{enumerate}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-	\item 假设某一新节点加入同步域中，首先默认进入Init状态，同时会持续监听外界主时钟发布过来的Sync报文，该监听会持续一定时间段；
-	\item 若在该时间段结束后仍未收到，则进入Pre\_Master状态，此时该时钟会表现主时钟属性，但不对外发送Sync报文；
-	\item Pre\_Master会保持一段时间，该时间段内继续等待外界Sync报文；
-	\item 若该等待时间超时仍未收到，则变成Master状态，自身开始对外发布Sync报文；
-	\item 在正常运行中，若某主时钟收到了精确度更高的Sync报文，那么就会立即停止自身的Master状态，而且不再对外发布Sync报文；
-	\item 相反，如果某个从时钟发现自身时钟性能与精度比当前主时钟更好，那么会将自己状态调整成Master，并开始对外发布Sync报文。
-\end{enumerate}
-
-网络内各节点都会据此执行状态决定算法，最终系统内所有时钟都动态地更新各自的状态。
-
-可参考图\ref{fig:state_decision}所示。
-
-\begin{figure}[!hbp]
-  \centering
-  \begin{minipage}[b]{0.8\textwidth}
-    \captionstyle{\centering}
-    \centering
-    \includegraphics[width=12cm]{state_decision}
-    \bicaption[fig:state_decision]{状态决策算法}{状态决策算法}{Fig}{The State Decision Algorithm}
-  \end{minipage}     
-\end{figure}
-
 \subsection{时钟同步算法}
 \label{sec:1588_theory_sync}
-在图\ref{fig:process_of_time_sync}中，我们可以看到较为完整的时钟同步过程。下面，对时钟同步过程及相关计算做简明扼要地介绍。
+在图\ref{fig:process_of_time_sync}中，可以看到较为完整的时钟同步过程。下面，对时钟同步过程及相关计算做简明扼要地介绍。
 
 \begin{figure}[!hbp]
   \centering
@@ -133,11 +69,11 @@ IEEE1588协议全名为：IEEE Standard for a Precision Clock Synchronization Po
 	T_{delay_2} - T_{offset} = t4 - t3
 \end{align}
 
-此时，我们根据协议标准中，将往返传输延时视为对称，即：
+此时，根据协议标准中，将往返传输延时视为对称，即：
 \begin{align}
 	T_{delay_1} = T_{delay_2} = T_{delay}
 \end{align}
-所以，我们结合上面几个式子可以得到如下结果：
+所以，结合上面几个式子可以得到如下结果：
 \begin{align}
 	T_{delay} = \frac{(t2 - t1) + (t4 - t3)}{2}
 \end{align}
@@ -145,9 +81,9 @@ IEEE1588协议全名为：IEEE Standard for a Precision Clock Synchronization Po
 	T_{offset} = \frac{(t2 - t1) - (t4 - t3)}{2}
 \end{align}
 
-通过上面的计算方法，我们可以得到主从时钟之间的相位偏差$T_{offset}$。然后，我们还需要计算主从时钟的时钟频率偏差才能实现完整的时钟同步。
+通过上面的计算方法，可以得到主从时钟之间的相位偏差$T_{offset}$。然后，还需要计算主从时钟的时钟频率偏差才能实现完整的时钟同步。
 
-为了计算时钟频率偏差，我们可以采用下面的方法来计算。我们知道，主时钟是隔固定的周期相从时钟发送Sync报文的，所以，对主时钟而言，第i个Sync报文和第(i+1)个Sync报文之间的发送间隔为：
+为了计算时钟频率偏差，可以采用下面的方法来计算。由于主时钟是隔固定的周期相从时钟发送Sync报文的，所以，对主时钟而言，第i个Sync报文和第(i+1)个Sync报文之间的发送间隔为：
 \begin{align}
 	\Delta _{master} = T_{m}(k + 1) + T_{delay}(k + 1) - (T_{m}k - T_{delay}k)
 \end{align}
@@ -156,7 +92,7 @@ IEEE1588协议全名为：IEEE Standard for a Precision Clock Synchronization Po
 	\Delta _{slave} = T_{s}(k + 1) - T_{s}k
 \end{align}
 
-所以，我们可以利用上述的比例关系来得到主从时钟的频率偏差。
+所以，可以利用上述的比例关系来得到主从时钟的频率偏差。
 \begin{align}
 	\Delta F = \frac{\Delta _{master}}{\Delta _{slave}}
 \end{align}
@@ -174,44 +110,6 @@ IEEE1588系统是由PTP设备和非PTP设备结合而成的分布式网络化系
 	\item 边界时钟（Boundary Clock, BC）：边界时钟包含一个或多个PTP端口，在物理上将一个同步网络划分为多个子网。其每一个端口相当于一个普通时钟，能够引出一条PTP路径，若该端口连接主时钟，则表现从时钟属性；若连接从时钟，则该端口表现主时钟属性。另外，非PTP报文可以通过它来转发，但PTP报文不可以跨越边界时钟。在实际应用中，边界时钟一般安装在路由器、交换机等具有数据收发功能的网络设备上。
 	\item 透明时钟（Transparent Clock, TC）：透明时钟可以记录报文的进入时间戳和离开时间戳，利用两个时间戳相减得到的相对时间作为驻留时间传递给从时钟，从时钟可以减去该时间从而仿佛报文从未经过该透明时钟，使得波动因素更小。
 	\item 管理节点（Management Node）：管理节点不需要实现时钟同步功能，它只需要能够对时钟同步进行管理。
-\end{itemize}
-
-\subsection{PTP时钟端口状态及状态机原理}
-对于一个ptp时钟设备，一般而言它会包含一个或多个端口，每个端口具备自己的状态且相互独立，它们各自的状态都由时钟自身的协议引擎来计算并赋予给它们，而且，处于不同状态的端口对外会有不同表现。
-
-端口状态主要包括以下九种：
-\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-	\item Initializing：初始化状态。在时钟启动时，端口会进入该状态，此时会完成端口数据集、硬件等多种初始过过程。
-	\item Listening：监听状态。该状态表示端口正在监听来自主时钟的Announce报文，而且该状态会有超时时间，即如果在固定时间内仍未收到Announce报文则发生超时。此时会根据状态机规则进入其他状态。
-	\item Disabled：禁止状态。若端口处于该状态，则不会对外发送任何ptp报文。
-	\item Faulty：故障状态。该状态表明端口故障，不会影响其他端口正常运行。
-	\item Uncalibrated：这种状态表明该时钟的所有端口检测到了一个或多个外界主时钟，而且已经从其他端口处选择了主时钟，如果当前端口也检测到了主时钟，为了不发生多个主时钟的问题，当前端口会进入该状态。
-	\item Master：作为主时钟，对外界发送同步报文。
-	\item Pre\_Master：即刚进入时钟同步系统且未收到任何主时钟的报文，那么会暂时进入该状态，但是此时并不会对外发送同步报文。
-	\item Slave：从状态，接受外界主时钟的同步报文并对本地时钟进行同步。
-	\item Passive：被动状态。
-\end{itemize}
-
-下图\ref{fig:port_state_flow}为时钟端口状态机，每个端口的状态变化都会依据该状态机规则进行。
-
-\begin{figure}[!hbp]
-  \centering
-  \begin{minipage}[b]{0.6\textwidth}
-    \captionstyle{\centering}
-    \centering
-    \includegraphics[width=10cm]{port_state_flow}
-    \bicaption[fig:port_state_flow]{端口状态机}{端口状态机}{Fig}{PTP posrState machines}
-  \end{minipage}     
-\end{figure}
-
-下面，将状态机中比较重要的状态转换事件做简要介绍，不作深入研究。
-\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-	\item POWERUP事件：表示节点上电或者复位。
-	\item INITIALIZE事件：表示端口收到了INITIALIZE管理报文等。
-	\item FAULT\_DETECTED事件：表示程序在运行过程中，用来阻止协议正确运行的事件。
-	\item STATE\_DECISION\_EVENT事件：状态决定事件，即当端口收到有效的Announce报文时会触发该事件，此时将调用BMC最佳主时钟算法来决定各个端口应该进入的状态。
-	\item QUALIFICATION\_TIMEOUT\_EXPORES事件：表示端口维持在Pre\_Master状态的时间间隔，其中，qualificationTimeoutInterval一般是Announce报文发送周期的整数倍。
-	\item ANNOUNCE\_RECEIPT\_TIMEOUT\_EXPIRES事件：该事件表示端口在规定时间内没有收到Announce报文，即发生超时事件。
 \end{itemize}
 
 \subsection{PTP报文介绍}
@@ -275,6 +173,11 @@ PTP报文中的Sync和Req\_Delay两种报文主体主要包括了时间戳信息
 
 其中，grandmasterPriority1、grandmasterClockQuality、grandmasterPriority2和grandmasterIdentity等数据都是用来表示Grand Master的时钟质量，对外发送以让其他时钟能够进行数据集比较算法，然后依靠端口状态变化规则来建立整个系统的主从状态。
 
+\section{PTP报文封装与传输周期对同步精度的影响分析}
+
+\subsection{PTP报文封装传输过程及其对同步精度的影响分析}
+首先，一般来讲会在应用层准备PTP协议报文，把当前时间戳信息作为传递数据打包进去并传递给传输层；然后，操作系统按照网络协议栈将应用层数据依次打包进入UDP传输层报文和IP网络层报文；然后从网络层发送给数据链路层，该层会为报文添加以太网帧的首部和尾部形成完整的以太网报文，发送给物理层硬件发送出去\supercite{54}。
+
 \subsection{PTP报文传输周期及其对同步过程的影响分析}
 在同步过程中，最重要的便是offset值和delay值的计算，这直接涉及到同步结果的准确性和稳定性；另外还有最初主从秩序建立的快速性也非常重要。所以，下面简单介绍相关的时间周期和超时事件，并分析其对同步过程的影响。
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
@@ -283,17 +186,14 @@ PTP报文中的Sync和Req\_Delay两种报文主体主要包括了时间戳信息
 	\item Delay\_Req报文周期：该报文周期值保存在portDS.logMinDelayReqInterval中，取值范围为0-5，对应的实际周期为1s-32s，默认值为1s。该报文主要用来更新链路延时delay值。对于该值的选取也应该慎重考虑，如果周期过小，则会给主时钟增加过多的负载压力，加剧网络流量负载；若周期过大，则有可能导致上一次的delay与当前实际delay值出现严重偏差，从而导致offset值偏差较大，严重破坏同步精度。理想的周期应该在区间[0， $2^{portDS.logMinDelayReqInterval+1}$]中均匀分布。
 \end{itemize}
 
-\subsection{PTP报文封装传输过程及其对同步精度的影响分析}
-首先，一般来讲我们会在应用层准备PTP协议报文，把当前时间戳信息作为传递数据打包进去并传递给传输层；然后，操作系统按照网络协议栈将应用层数据依次打包进入UDP传输层报文和IP网络层报文；然后从网络层发送给数据链路层，该层会为报文添加以太网帧的首部和尾部形成完整的以太网报文，发送给物理层硬件发送出去\supercite{54}。
-
-\section{IEEE1588实际应用中存在的问题及本人研究目标}
-在上文中，主要介绍了IEEE1588协议的实现原理。根据我们对原理如时钟同步算法的分析研究，再加上PTP协议在工业实际中的精度表现，可以发现该协议中仍然存在一些影响精度的因素，而且，如果我们希望实际精度能够达到微秒级甚至纳秒级，就不得不对这些因素进行深入的研究。下面本人结合IEEE1588的实现原理及实际表现，提出其中存在的固有弊病和漏洞，正是这些问题导致了实际运行中的同步精度难以达到亚微秒级。
+\section{IEEE1588实际应用中存在的问题及研究目标}
+在上文中，主要介绍了IEEE1588协议的实现原理。根据对原理如时钟同步算法的分析研究，再加上PTP协议在工业实际中的精度表现，可以发现该协议中仍然存在一些影响精度的因素，而且，如果希望实际精度能够达到微秒级甚至纳秒级，就不得不对这些因素进行深入的研究。下面将结合IEEE1588的实现原理及实际表现，提出其中存在的固有弊病和漏洞，正是这些问题导致了实际运行中的同步精度难以达到亚微秒级。
 
 \subsection{链路延时不对称}
 \label{sec:1588_problem_1}
 在IEEE1588协议中，当计算主从时钟偏差offset时，需要先获取链路传输延时delay。在协议中该延时的计算方法是直接假设前后两次传输延时相等，从而通过取平均计算出offset。然而实际上，前后两次的传输路径往往并不对称，经过分析，可以发现以下几个导致往返的链路传输延时不一致的因素\supercite{55}。
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-	\item 排队堵塞：当报文在传输中经过中间交换机或路由器时，由于网络负载的不可预知性，我们无法知道报文在中间交换机上的排队时间，当网络流量良好时，报文可以直接传递过去；而当网络负载较大，可能导致很长的报文排队时间。另外，即使报文可以不用排队，由于协议栈的存在，报文仍然需要经过解包和打包的过程，而这两个过程的消耗时间都与操作系统的调度和协议栈处理过程有关。因此，报文传递过程中穿越交换机时排队和堵塞时间的随机性会导致延时不对称\supercite{46}。
+	\item 排队堵塞：当报文在传输中经过中间交换机或路由器时，由于网络负载的不可预知性，无法知道报文在中间交换机上的排队时间，当网络流量良好时，报文可以直接传递过去；而当网络负载较大，可能导致很长的报文排队时间。另外，即使报文可以不用排队，由于协议栈的存在，报文仍然需要经过解包和打包的过程，而这两个过程的消耗时间都与操作系统的调度和协议栈处理过程有关。因此，报文传递过程中穿越交换机时排队和堵塞时间的随机性会导致延时不对称\supercite{46}。
 	\item 传输抖动：在网络系统中，所有信息的传递过程所消耗的时间会存在固有的抖动，这时无法避免的。
 	\item 网络拓扑结构变化：当拓扑结构突然发生变化，报文传输的路径也就不同了，这必然导致往返链路时延完全不同。
 	\item delay与当前真实延时不匹配：因为delay的计算依靠Delay\_Req报文周期，而offset的计算又是依靠Sync报文周期，两者一般并不匹配。所以会导致在计算offset所使用的delay是过去的值，与当前真实的delay值可能并不一致。
@@ -301,28 +201,14 @@ PTP报文中的Sync和Req\_Delay两种报文主体主要包括了时间戳信息
 
 上述几种现象的存在，都会导致往返的两次延时不一致，所以说，在高同步精度的要求下，真实的传输延时绝对不能简单的假设相等。
 
-对于网络延时的研究，也正是本文的重点内容。本人在接下来的内容中，会对上述所提到的几种因素进行拆解分析，同时，从数学统计的角度，把所有历史延时数据作为样本，采用多个统计方法来对数据进行处理和消除干扰，从而得到稳定的同步数据。
+对于网络延时的研究，也正是本文的重点内容。在接下来的内容中，文章会对上述所提到的几种因素进行拆解分析，同时，从数学统计的角度，把所有历史延时数据作为样本，采用多个统计方法来对数据进行处理和消除干扰，从而得到稳定的同步数据。
 
 \subsection{主从时钟源频率漂移}
-由于主时钟在发送Sync报文时的偏差值Offset\_1与从时钟最后接收Delay\_Respo报文时的偏差值Offset\_2是不完全一致的，所以我们最终计算出来的offset并不完全等于真实的Offset\_2。所以这会导致同步精度变差。因此本人将利用上面的Sync报文统计样本，采用统计方法来计算主从时钟源频率偏差，从而对从时钟进行校正。
+由于主时钟在发送Sync报文时的偏差值Offset\_1与从时钟最后接收Delay\_Respo报文时的偏差值Offset\_2是不完全一致的，所以最终计算出来的offset并不完全等于真实的Offset\_2。所以这会导致同步精度变差。因此下面将利用上面的Sync报文统计样本，采用统计方法来计算主从时钟源频率偏差，从而对从时钟进行校正。
 
 \subsection{时间戳的精确度}
 \label{sec:1588_problem_2}
 在上文中的报文的封装传输过程已经提到，由于在协议栈中传递所带来的延时，导致物理层之上的时间戳往往不能真实反映报文的发送时间或接收时间，若直接使用这种时间戳来进行计算，那么从根本上就带来了误差\supercite{53}。所以，如果一些设备采用的是软件时间戳方式，那么报文的封装和解包过程就势必会对真实的时间戳产生偏差，这种时间戳精确度上所带来的误差是不可忽视的。
 
-不过，在本人所参与的交换机项目中，我们采用的是支持硬件时间戳的设备，该设备能够直接在数据链路层与物理层之间为报文添加时间戳，从而保证了时间戳的精确度，因此，在本文中，并不会对该因素作过多深入的探讨和研究。
-
-\subsection{从时钟稳定性}
-\label{sec:1588_problem_3}
-根据IEEE1588协议，当从时钟收到Sync报文，便立即进行offset值的计算。当得到offset值，即主从时钟偏差后，便会对从时钟相位直接进行校正。这种校正策略有很好的快速性，使的从时钟在很短的时间内实现与主时钟同步。但缺陷是，这种做法并没有考虑到offset值的准确度，如果由于延时的存在导致offset值出现较大的偏差，那么从时钟则会一直处于快速的振荡状态，这对于从时钟系统而言是非常不利的。
-
-为了兼顾从时钟的同步快速性和自身稳定性，本人在接下来的内容中，会从下面三种从时钟控制策略入手，通过分析并仿真实践来进行对比。
-\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-	\item 直接校正；
-	\item 常规PI控制器校正；
-	\item 基于BP神经网络的PID控制器校正。
-\end{itemize}
-
-
-
+不过，在实际参与的交换机项目中，采用的是支持硬件时间戳的设备，该设备能够直接在数据链路层与物理层之间为报文添加时间戳，从而保证了时间戳的精确度，因此，在本文中，并不会对该因素作过多深入的探讨和研究。
 
