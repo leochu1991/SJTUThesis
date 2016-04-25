@@ -12,7 +12,7 @@
 
 然而，在实际的工业运行中可以发现，IEEE1588同步协议仍然存在严重的问题。这些问题导致时钟同步精度难以达到理想的微秒级甚至亚微秒级的同步精度，这不仅严重束缚了该协议在工业系统中的应用，也使得更多分布式系统对时钟同步的需求更加迫切。因此，为了充分发挥IEEE1588在工业实际系统中的价值，本文对该协议进行了深入分析，结合工业实际来探究其中破坏时钟同步精度的各种因素，然后在第三章钟创新性地从数学统计角度出发对传输时延进行深入研究，提出“动态阈值法”、“基于固定时间窗的实时监控算法”等统计方法进行优化。以时延抖动为例，由于该因素的随机性和不可预知性，一直以来都很难有很好的应对方案，然后本文从统计角度出发，把时延数据作为样本利用相关的数学方法来进行处理，从而明显提高了时钟同步的精度和稳定度，这也是本文创新点之一。另外，本文第四章先从统计角度出发，分析并提出了关于主从时钟晶振源漂移的补偿方案，还针对透明时钟进行了算法修正，最后将基于实验室搭建的一套stateflow时钟同步仿真系统，通过在该仿真系统上进行了算法验证，结合仿真结果可以看出本文所提算法使得时钟同步精度得到明显的改善。另外，相信本文创新性地从统计角度切入研究所得到研究结果，一定会为后面更多学者提供进一步深入探索的思路和依据。
 
-\keywords{\large 时钟同步 \quad IEEE1588 \quad 统计方法 \quad 时钟伺服系统 \quad stateflow}
+\keywords{\large 时钟同步 \quad IEEE1588 \quad 统计算法 \quad 频率补偿 \quad 透明时钟 \quad  \quad stateflow}
 \end{abstract}
 
 \begin{englishabstract}
@@ -27,6 +27,6 @@ However, In the industrial reality, we found there are still many problems in IE
 
 At the last of this paper, I will introduce our own clock synchronization simulink system which is based on stateflow on matlab, and I also did the algorithm validation by this simulink system. From the simulink result we can see those methods, proposed by myself, do improve the accuracy and stablity of clock synchronization system. What's more, I believe my reserach result , which is coming from the perspective of math statistic, will inspire many other scholars and reserachers and provide them some thoughts and scientific basis.
 
-\englishkeywords{\large Clock Synchronization, IEEE1588, statistical method, clock servo system, stateflow}
+\englishkeywords{\large Clock Synchronization, IEEE1588, statistical method, frenquency compensation, stateflow}
 \end{englishabstract}
 
