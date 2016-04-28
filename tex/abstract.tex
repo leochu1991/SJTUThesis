@@ -4,19 +4,19 @@
 %%==================================================
 
 \begin{abstract}
-时钟同步问题来源于工业中分布式系统的发展和实时性任务的需求，核心问题是通过同步方法来实现各个子系统之间的时钟一致性，传统的GPS同步方法和NTP\footnote{网络时钟同步协议}等协议由于价格昂贵、同步精度差等原因满足不了工业需求，IEEE1588\footnote{精密时钟同步协议}协议是目前时钟同步领域最好的同步方法，不过其在实际使用中由于链路延时等因素影响难以达到亚微秒甚至纳秒同步精度，且从时钟稳定性没有保证。
+时钟同步问题来源于工业中分布式系统的发展和实时性任务的需求，核心问题是通过同步方法来实现各个子系统之间的时钟一致性，传统的GPS同步方法和NTP(网络时钟同步协议)等协议由于价格昂贵、同步精度差等原因满足不了工业需求，IEEE1588精确时钟同步协议协议是目前时钟同步领域最好的同步方法，不过其在实际使用中由于链路延时等因素影响难以达到亚微秒甚至纳秒同步精度以及无法保证从时钟的稳定性。
 
 本文从统计角度出发，对链路延时、时钟伺服系统及时钟频率漂移补偿进行深入研究，旨在提供一种系统性的统计方法来提高IEEE1588时钟同步系统精度及稳定性，主要工作如下：
 
-(1) 通过对链路延时成分进行数学特性分析，拆解成固有抖动、暂时性时延突变和持久性时延变化，从统计角度提出动态阈值法与基于固定时间窗的实时监控算法等以提高同步精度；
+(1) 通过对链路延时成分进行数学特性分析，并从统计角度提出动态阈值法与基于固定时间窗的实时监控算法等以提高同步精度；
 
-(2) 在时钟伺服系统中，针对链路时延的阶跃突变干扰，提出多模型PID控制策略，以优化从时钟的稳定性，减少从时钟的频繁抖动以保证整个系统的平稳运行；
+(2) 在时钟伺服系统中，针对链路时延的阶跃突变干扰采用多模型PID控制策略，以优化从时钟的稳定性，减少从时钟的频繁抖动以保证整个系统的平稳运行；
 
-(3) 对于时钟频率漂移问题，通过监测Sync报文样本是否发生链路堵塞等来进行报文过滤，只选取正常链路传输的Sync样本来进行校正，从而提高频率偏差计算的准确度；
+(3) 对于时钟频率漂移问题，通过监测PTP报文样本是否发生链路堵塞等来进行报文过滤，只选取正常链路传输的PTP样本来进行校正，从而提高频率偏差计算的准确度；
 
 (4) 通过对比边界时钟与透明时钟差异性来对统计算法进行调整，以使本文所提算法能够应用到透明时钟场合中；
 
-(5) 通过stateflow时钟同步仿真系统，对于上文所提算法进行仿真分析。仿真结果表明上述算法不仅能够提高时钟同步系统对多种链路延时抖动的适应性，还能提高整个系统的同步精度和稳定性。
+(5) 通过stateflow时钟同步仿真系统进行仿真分析。仿真结果表明上述算法不仅能够提高时钟同步系统对多种链路延时抖动的适应性，还能提高整个系统的同步精度和稳定性。
 
 \keywords{\large 时钟同步 \quad 统计算法 \quad 频率补偿 \quad 时钟伺服系统 \quad  \quad stateflow}
 \end{abstract}
@@ -31,7 +31,7 @@ From the perspective of mathematical statistics, the objective of this paper is 
 
 (2) In clock servo system, multi-model PID controller strategy is promoted for improving the slave-clock stability when step-mutation occurs. So slave clock system will become more smooth due to the less jitter.
 
-(3) By filtering Sync messages based on the detection of link blocking, qualified Sync messages will be choosed for calcuation of master-to-slave frequency offset.
+(3) By filtering PTP messages based on the detection of link blocking, qualified PTP messages will be choosed for calcuation of master-to-slave frequency offset.
 
 (4) By comparing boundary-clock with transparent-clock, the statistics methods are promoted in order to make our statistical methods able to be applied into the occasion of transparent-clock device.
 
