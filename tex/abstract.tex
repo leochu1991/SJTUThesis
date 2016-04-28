@@ -23,20 +23,20 @@
 
 \begin{englishabstract}
 
-Time synchronization problem originates from the requirement of development of distributed system and real-time tasks. The core problem is to achieve the time consistency among all the subsystems through tims-synchronization problem. The traditional GPS method and NTP protocol aren't able to meet current industrial demand in cause of their high-cost and unpredictable message latency. Currently, IEEE1588 protocol is the best choice for time-synchronization problem, However, it cann't achieve sub-microsecond level or nanosecond level precision and it's not able to guarantee the stability of slave clock.
+Time synchronization problem originates from the requirement of developing distributed system and real-time tasks. The core problem is to achieve the time consistency among all the subsystems through time-synchronization method. The traditional GPS method and NTP protocol are not able to meet current industrial demand due to their high-cost and unpredictable message latency. Currently, IEEE1588 protocol is the best choice for time-synchronization problem, However, it often cannot achieve the precision level of sub-microsecond or nanosecond and it's not able to guarantee the stability of slave clock in the industrial reality.
 
-From the perspective of mathematical statistics, the aim of this paper is to promote a systemic statistical method to improvement the time-synchronization precision and stability. The contribution mainly include
+From the perspective of mathematical statistics, the objective of this paper is to promote a systematically statistical method to improve the time-synchronization precision and stability. The contributions are shown in the following.
 
-(1) Through the mathematical analysis for transmitting message latency, Decomposed latency into inherent jitter, temporary latency mutation and persistent latency change. Then dynamic threshold method、fixed-window real-time detection method for accuracy improvement are promoted.
+(1) Through the mathematical analysis for transmitting message latency, I decomposed latency into inherent jitter, temporary latency mutation and persistent latency change. In order to improve accuracy, dynamic threshold method and fixed-window real-time detection method are promoted.
 
-(2) In clock servo system, Multi-model PID controller strategy is promoted for improving the slave-clock stability when step-mutation occurs. So less jitter of slave clock system will become more smooth.
+(2) In clock servo system, multi-model PID controller strategy is promoted for improving the slave-clock stability when step-mutation occurs. So slave clock system will become more smooth due to the less jitter.
 
-(3) By filtering Sync message based on the detection of link blocking, qualified Sync messages will be choosed for calcuation of mast-to-slave frequency offset.
+(3) By filtering Sync messages based on the detection of link blocking, qualified Sync messages will be choosed for calcuation of master-to-slave frequency offset.
 
-(4) By comparing bound-clock with transparent-clock, the statistics methods, which are promoted in this paper, will also be able to applied into the occasion with transparent-clock device.
+(4) By comparing boundary-clock with transparent-clock, the statistics methods are promoted in order to make our statistical methods able to be applied into the occasion of transparent-clock device.
 
-(5) Based on stateflow time-synchronization simulation system, all the promoted methods above get validation and verfication. And the simulation result show us those methods above can not only improve the adaptive ability of time-synchronization system for multi latency change, but also the synchronization precision and stability of whole system.
+(5) Based on stateflow time-synchronization simulation system, all the promoted methods above get validated and verified. The simulation results show us those methods above can improve the adaptive ability of time-synchronization system for multiple types of latency changes, and the synchronization precision and stability of whole system as well.
 
-\englishkeywords{\large Clock Synchronization,  statistical method, frenquency compensation, clock servo, stateflow}
+\englishkeywords{\large clock synchronization,  statistical method, frenquency compensation, clock servo, stateflow}
 \end{englishabstract}
 
