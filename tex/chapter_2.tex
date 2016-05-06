@@ -97,76 +97,54 @@ IEEE1588系统是由PTP设备和非PTP设备结合而成的分布式网络化系
 % 上文中介绍了IEEE1588协议的理论部分，包括主从秩序建立和时钟同步过程。下文会简明扼要地介绍IEEE1588的具体实现过程及相关因素。
 
 % \subsection{PTP设备类型}
-% IEEE1588系统是由PTP设备和非PTP设备结合而成的分布式网络化系统。其中，PTP设备包括普通时钟（Ordinary Clock, OC）、边界时钟（Boundary Clock, BC）、端到端/点到点透明时钟（End-to-End/Peer-to-Peer Transparent Clock, TC）和管理节点。非PTP设备包括普通交换机、路由器及其他底层设备等。
+另外，IEEE1588系统是由PTP设备和非PTP设备结合而成的分布式网络化系统。其中，PTP设备包括普通时钟（Ordinary Clock, OC）、边界时钟（Boundary Clock, BC）、端到端/点到点透明时钟（End-to-End/Peer-to-Peer Transparent Clock, TC）和管理节点。非PTP设备包括普通交换机、路由器及其他底层设备等。
 
-% 下面对PTP设备作简要介绍：
-% \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-% 	\item 普通时钟（Ordinary Clock, OC）：普通时钟只有一个物理PTP端口，内部包含两个逻辑接口：事件接口主要用来收发含有时间戳的事件报文；通用接口主要用来收发不含时间戳的通用报文。普通时钟指网络中的一般节点，比如电信网基站，或者工业中的测量仪器。
-% 	\item 边界时钟（Boundary Clock, BC）：边界时钟包含一个或多个PTP端口，在物理上将一个同步网络划分为多个子网。其每一个端口相当于一个普通时钟，能够引出一条PTP路径，若该端口连接主时钟，则表现从时钟属性；若连接从时钟，则该端口表现主时钟属性。另外，非PTP报文可以通过它来转发，但PTP报文不可以跨越边界时钟。在实际应用中，边界时钟一般安装在路由器、交换机等具有数据收发功能的网络设备上。
-% 	\item 透明时钟（Transparent Clock, TC）：透明时钟可以记录报文的进入时间戳和离开时间戳，利用两个时间戳相减得到的相对时间作为驻留时间传递给从时钟，从时钟可以减去该时间从而仿佛报文从未经过该透明时钟，使得波动因素更小。
-% 	\item 管理节点（Management Node）：管理节点不需要实现时钟同步功能，它只需要能够对时钟同步进行管理。
-% \end{itemize}
+\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+	\item 普通时钟（Ordinary Clock, OC）：普通时钟只有一个物理PTP端口，内部包含两个逻辑接口：事件接口主要用来收发含有时间戳的事件报文；通用接口主要用来收发不含时间戳的通用报文。普通时钟指网络中的一般节点，比如电信网基站，或者工业中的测量仪器。
+	\item 边界时钟（Boundary Clock, BC）：边界时钟包含一个或多个PTP端口，在物理上将一个同步网络划分为多个子网。其每一个端口相当于一个普通时钟，能够引出一条PTP路径，若该端口连接主时钟，则表现从时钟属性；若连接从时钟，则该端口表现主时钟属性。另外，非PTP报文可以通过它来转发，但PTP报文不可以跨越边界时钟。在实际应用中，边界时钟一般安装在路由器、交换机等具有数据收发功能的网络设备上。
+	\item 透明时钟（Transparent Clock, TC）：透明时钟可以记录报文的进入时间戳和离开时间戳，利用两个时间戳相减得到的相对时间作为驻留时间传递给从时钟，从时钟可以减去该时间从而仿佛报文从未经过该透明时钟，使得波动因素更小。
+	\item 管理节点（Management Node）：管理节点不需要实现时钟同步功能，它只需要能够对时钟同步进行管理。
+\end{itemize}
 
-% \subsection{PTP报文介绍}
-% \subsubsection{PTP报文类型}
-% PTP协议中的报文分两类，事件（Event）报文和一般（General）报文。下面简单介绍本文使用最多的几种报文。
-% \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-% 	\item Announce报文：该报文主要用于最佳主时钟算法，报文内部包含描述主时钟所需的数据集，当时钟接收到该报文时，即会调用最佳主时钟算法，比较自身与外部时钟的品质，并根据结果来决定端口的主从状态\supercite{52}。
-% 	\item Sync报文：主时钟周期性对外发送Sync报文，该报文包含了主时钟发送时的时间戳。当从时钟接收到该报文，就会通过offset计算方法来计算出主从时间偏差，并以此来校正自身从而实现同步\supercite{52}。
-% 	\item Delay\_Req和Delay\_Res报文：为了获得主从时钟间的路径传输延时，从时钟会周期性对主时钟发送Delay\_Req报文，当主时钟接收到该报文时，会立即保存接收时间戳，并通过回传Delay\_Res报文把接收时间戳返回给从时钟，用于从时钟的delay值更新\supercite{52}。
-% \end{itemize}
-% 上面几种报文是本文使用最多的，因此进行了着重介绍。除了上述报文，还有Follow\_Up、PDelay\_Req、PDelay\_Res等报文也非常重要，在此不作过多赘述。
+PTP协议中的报文分两类，事件（Event）报文和一般（General）报文。下面简单介绍本文使用最多的几种报文。Announce报文主要用于最佳主时钟算法，报文内部包含描述主时钟所需的数据集，当时钟接收到该报文时，即会调用最佳主时钟算法，比较自身与外部时钟的品质，并根据结果来决定端口的主从状态\supercite{52}。然后，主时钟周期性对外发送Sync报文，该报文包含了主时钟发送时的时间戳。当从时钟接收到该报文，就会通过offset计算方法来计算出主从时间偏差，并以此来校正自身从而实现同步\supercite{52}。Delay\_Req和Delay\_Res报文：为了获得主从时钟间的路径传输延时，从时钟会周期性对主时钟发送Delay\_Req报文，当主时钟接收到该报文时，会立即保存接收时间戳，并通过回传Delay\_Res报文把接收时间戳返回给从时钟，用于从时钟的delay值更新\supercite{52}。
 
-% \subsubsection{PTP报文头部格式}
-% 下面分报文头部和报文主体格式进行简单介绍。
-% 所有PTP报文头格式一致，如下图\ref{fig:ptp_message_header}。
-% 其中，各字段含义如下：
-% \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-% 	\item transportSpecific：标记下一层协议类型，用来区分UDP/IPv6、UDP/IPv4和IEEE802.3；
-% 	\item messageType：标记当前PTP报文类型，包括Sync、Delay\_Req、Follow\_Up、Delay\_Req等；
-% 	\item versionPTP：标记当前PTP版本；
-% 	\item messageLength：标记PTP报文总长度，包含报文头部、报文主体及报文扩展字段；
-% 	\item domainNumber：标记PTP发送端口所属域编号；
-% 	\item flagField：标记单步或双步模式；
-% 	\item correctionField：标记时间修正域，即报文转发时的驻留时间或链路传输延时，该字段为64位有符号整型，意味着它可以使得时间同步精度达到1ns；
-% 	\item sourcePortIdentity：标记发送报文的源端口号，由设备ID及端口ID组成。
-% \end{itemize}
+所有PTP报文头格式一致，各字段含义如下：
+\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+	\item transportSpecific：标记下一层协议类型，用来区分UDP/IPv6、UDP/IPv4和IEEE802.3；
+	\item messageType：标记当前PTP报文类型，包括Sync、Delay\_Req、Follow\_Up、Delay\_Req等；
+	\item versionPTP：标记当前PTP版本；
+	\item messageLength：标记PTP报文总长度，包含报文头部、报文主体及报文扩展字段；
+	\item domainNumber：标记PTP发送端口所属域编号；
+	\item flagField：标记单步或双步模式；
+	\item correctionField：标记时间修正域，即报文转发时的驻留时间或链路传输延时，该字段为64位有符号整型，意味着它可以使得时间同步精度达到1ns；
+	\item sourcePortIdentity：标记发送报文的源端口号，由设备ID及端口ID组成。
+\end{itemize}
 
-% \begin{figure}[!hbp]
-%   \centering
-%   \begin{minipage}[b]{0.6\textwidth}
-%     \captionstyle{\centering}
-%     \centering
-%     \includegraphics[width=10cm]{ptp_message_header}
-%     \bicaption[fig:ptp_message_header]{PTP报文头部格式}{PTP报文头部格式}{Fig}{The Style of PTP message Header}
-%   \end{minipage}     
-% \end{figure}
+Sync和Req\_Delay两种报文主体主要包括了时间戳信息：NanosecondsField和SecondsField，分别表示时间戳的秒部分和纳秒部分。
 
-% \subsubsection{PTP报文主体格式}
-% PTP报文中的Sync和Req\_Delay两种报文主体主要包括了时间戳信息：NanosecondsField和SecondsField，分别表示时间戳的秒部分和纳秒部分。
-% \begin{figure}[!hbp]
-%   \centering
-%   \begin{minipage}[b]{0.6\textwidth}
-%     \captionstyle{\centering}
-%     \centering
-%     \includegraphics[width=10cm]{ptp_message_content}
-%     \bicaption[fig:longcaptiongood]{PTP报文主体格式}{PTP报文主体格式}{Fig}{The Structure of Sync Req\_Delay message content}
-%   \end{minipage}     
-% \end{figure}
+\begin{figure}[!hbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{ptp_message_content}
+    \bicaption[fig:longcaptiongood]{PTP报文主体格式}{PTP报文主体格式}{Fig}{The Structure of Sync Req\_Delay message content}
+  \end{minipage}     
+\end{figure}
 
-% 另外，对于Announce报文，其主体内容如图\ref{fig:ptp_announce_message_content}所示：
+另外，对于Announce报文，其主体内容如图\ref{fig:ptp_announce_message_content}所示：
 
-% \begin{figure}[htbp]
-%   \centering
-%   \begin{minipage}[b]{0.6\textwidth}
-%     \captionstyle{\centering}
-%     \centering
-%     \includegraphics[width=10cm]{ptp_announce_message_content}
-%     \bicaption[fig:ptp_announce_message_content]{Announce报文主体格式}{Announce报文主体格式}{Fig}{The Structure of Announce message content}
-%   \end{minipage}     
-% \end{figure}
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}[b]{0.6\textwidth}
+    \captionstyle{\centering}
+    \centering
+    \includegraphics[width=10cm]{ptp_announce_message_content}
+    \bicaption[fig:ptp_announce_message_content]{Announce报文主体格式}{Announce报文主体格式}{Fig}{The Structure of Announce message content}
+  \end{minipage}     
+\end{figure}
 
-% 其中，grandmasterPriority1、grandmasterClockQuality、grandmasterPriority2和grandmasterIdentity等数据都是用来表示Grand Master的时钟质量，对外发送以让其他时钟能够进行数据集比较算法，然后依靠端口状态变化规则来建立整个系统的主从状态。
+其中，grandmasterPriority1、grandmasterClockQuality、grandmasterPriority2和grandmasterIdentity等数据都是用来表示Grand Master的时钟质量，对外发送以让其他时钟能够进行数据集比较算法，然后依靠端口状态变化规则来建立整个系统的主从状态。
 
 \section{同步精度的影响分析}
 \subsection{PTP报文传输周期对同步过程的影响}
