@@ -78,7 +78,7 @@ IEEE1588系统是由PTP设备和非PTP设备结合而成的分布式网络化系
 
 通过上面的计算方法，可以得到主从时钟之间的相位偏差$T_{offset}$。然后，还需要计算主从时钟的时钟频率偏差才能实现完整的时钟同步。
 
-为了计算时钟频率偏差，可以采用下面的方法来计算。由于主时钟是隔固定的周期向从时钟发送Sync报文的，所以，对主时钟而言，第(k)个Sync报文和第(k+1)个Sync报文之间的发送间隔为：
+为了计算时钟频率偏差，可以采用下面的方法来计算。由于主时钟是隔固定的周期向从时钟发送Sync报文的，所以，对主时钟而言，第(k-1)个Sync报文和第(k)个Sync报文之间的发送间隔为：
 \begin{align}
 	\Delta T_{master} = T_{master(k)} - T_{master(k - 1)}
 \end{align}
@@ -92,9 +92,9 @@ IEEE1588系统是由PTP设备和非PTP设备结合而成的分布式网络化系
 
 所以，可以利用上述的比例关系来得到主从时钟的频率偏差。
 \begin{align}
-	\Delta F = \frac{\Delta T_{master}}{\Delta T_{slave}}
+	\Delta f = \frac{\Delta T_{master}}{\Delta T_{slave}}
 \end{align}
-只需要调节从时钟本地频率扩大$\Delta F$倍就可以实现主从时钟频率一致。
+只需要调节从时钟本地频率扩大$\Delta f$倍就可以实现主从时钟频率一致。
 
 % 另外，IEEE1588系统是由PTP设备和非PTP设备结合而成的分布式网络化系统。其中，PTP设备包括普通时钟（Ordinary Clock, OC）、边界时钟（Boundary Clock, BC）、端到端/点到点透明时钟（End-to-End/Peer-to-Peer Transparent Clock, TC）和管理节点。非PTP设备包括普通交换机、路由器及其他底层设备等。
 
