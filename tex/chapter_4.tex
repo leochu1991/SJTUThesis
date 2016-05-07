@@ -312,7 +312,7 @@ f_{delta} = \frac{1}{T_{m}} - \frac{1}{T_{s}}
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=8cm]{matlab/添加正态分布的随机抖动后的同步曲线.PNG}
+    \includegraphics[width=11cm]{matlab/添加正态分布的随机抖动后的同步曲线.PNG}
     \bicaption[fig:添加正态分布的随机抖动后的同步曲线]{添加正态分布随机抖动的常规同步曲线}{添加正态分布随机抖动的常规同步曲线}{Fig}{The Synchronization curve, within Normal Distribution random noise}
   \end{minipage}     
 \end{figure}
@@ -322,12 +322,12 @@ f_{delta} = \frac{1}{T_{m}} - \frac{1}{T_{s}}
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=8cm]{matlab/添加正态分布随机抖动且利用最小二乘处理后的同步曲线.PNG}
+    \includegraphics[width=11cm]{matlab/添加正态分布随机抖动且利用最小二乘处理后的同步曲线.PNG}
     \bicaption[fig:添加正态分布随机抖动且利用最小二乘处理后的同步曲线]{添加正态分布随机抖动且利用最小二乘处理后的同步曲线}{添加正态分布随机抖动且利用最小二乘处理后的同步曲线}{Fig}{The Synchronization curve dealing with least square method, within Normal Distribution random noise}
   \end{minipage}     
 \end{figure}
 
-通过上面的对比曲线，可以明显看出，未做任何处理时的同步曲线在-40ns－30ns之间波动，而采用最小二乘法进行样本处理后的同步曲线在-5ns－25ns之间波动，这说明最小二乘法处理后可以明显减小随机噪声对同步结果的影响，从时钟振动幅度减小，从时钟具有更好的同步效果。说明该方法能够很好的减小随机抖动对从时钟系统的影响。
+通过上面的对比曲线，可以明显看出，未做任何处理时的同步曲线在-80ns－80ns之间波动，而采用最小二乘法进行样本处理后的同步曲线在-35ns－35ns之间波动，这说明最小二乘法处理后可以明显减小随机噪声对同步结果的影响，从时钟振动幅度减小，从时钟具有更好的同步效果。说明该方法能够很好的减小随机抖动对从时钟系统的影响。
 
 \subsection{验证动态阈值法对暂时性时延突变的优化}
 首先，由于动态阈值法是针对一个固定时间窗内的样本进行数学处理，这里为了仿真，选定该时间窗长度为10，即一次累计10条样本后，再来对对从$t_{k1}$时刻到$t_{k(10)}$时刻之间的估计时延来计算它们的标准差$\sigma_{k}$，其中，k是指当前的时间窗编号，从1开始递增。每次计算完一个时间窗后，就将k加1，重新进入第(k+1)个时间窗继续计算。
@@ -349,7 +349,7 @@ f_{delta} = \frac{1}{T_{m}} - \frac{1}{T_{s}}
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=9cm]{matlab/添加暂时性时延突变后的同步曲线.PNG}
+    \includegraphics[width=11cm]{matlab/添加暂时性时延突变后的同步曲线.PNG}
     \bicaption[fig:添加暂时性时延突变后的同步曲线]{添加暂时性时延突变后的同步曲线}{添加暂时性时延突变后的同步曲线}{Fig}{The Synchronization curve, within temporary time-delay mutation}
   \end{minipage}     
 \end{figure}
@@ -360,12 +360,12 @@ f_{delta} = \frac{1}{T_{m}} - \frac{1}{T_{s}}
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=9cm]{matlab/添加暂时性时延突变并采用动态阈值法处理后的同步曲线.PNG}
+    \includegraphics[width=11cm]{matlab/添加暂时性时延突变并采用动态阈值法处理后的同步曲线.PNG}
     \bicaption[fig:添加暂时性时延突变并采用动态阈值法处理后的同步曲线]{添加暂时性时延突变后，采用动态阈值法处理前后的同步曲线}{添加暂时性时延突变后，采用动态阈值法处理前后的同步曲线}{Fig}{The Synchronization curve with dynamic threshold value method, within temporary time-delay mutation}
   \end{minipage}     
 \end{figure}
 
-通过上面的对比曲线，可以看出，当我们在同步系统运行到2s时，添加一个时延突变后，在图\ref{fig:添加暂时性时延突变后的同步曲线}中，同步值立即跃变到-380ns左右，这也就表明真实同步系统中如果一旦遇到阶跃突变，就会导致从时钟系统发生很大幅的阶跃波动，这会严重破坏从时钟系统的性能；而在图\ref{fig:添加暂时性时延突变并采用动态阈值法处理后的同步曲线}中，通过采用动态阈值法，可以检测到从时钟发生的大幅的阶跃波动，并且立即将该波动限制到给定范围内以保证从时钟的稳定，可看出此时的阈值选定在-90ns。
+通过上面的对比曲线，可以看出，当我们在同步系统运行到8s时，添加一个时延突变后，在图\ref{fig:添加暂时性时延突变后的同步曲线}中，同步值立即跃变到-380ns - 320ns之间，这也就表明真实同步系统中如果一旦遇到阶跃突变，就会导致从时钟系统发生很大幅的阶跃波动，这会严重破坏从时钟系统的性能；而在图\ref{fig:添加暂时性时延突变并采用动态阈值法处理后的同步曲线}中，通过采用动态阈值法，可以检测到从时钟发生的大幅的阶跃波动，并且立即将该波动限制到给定范围内以保证从时钟的稳定。
 
 因此，利用了动态阈值法对阶跃噪声进行优化后，从时钟的瞬间振荡明显减小，这意味着从时钟具备了更好的鲁棒性和稳定性，不会轻易随着网络负载变化而发生较大波动。
 
@@ -379,7 +379,7 @@ f_{delta} = \frac{1}{T_{m}} - \frac{1}{T_{s}}
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=9cm]{matlab/添加持久性时延变化后样本逐步覆盖的同步曲线.PNG}
+    \includegraphics[width=11cm]{matlab/添加持久性时延变化后样本逐步覆盖的同步曲线.PNG}
     \bicaption[fig:添加持久性时延变化后样本逐步覆盖的同步曲线]{添加持久性时延变化后样本逐步覆盖的同步曲线}{添加持久性时延变化后样本逐步覆盖的同步曲线}{Fig}{The Synchronization curve, within persistence time-delay change}
   \end{minipage}     
 \end{figure}
@@ -391,12 +391,12 @@ f_{delta} = \frac{1}{T_{m}} - \frac{1}{T_{s}}
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=10cm]{matlab/添加持久性时延变化后实时检测处理后的同步曲线.PNG}
+    \includegraphics[width=11cm]{matlab/添加持久性时延变化后实时检测处理后的同步曲线.PNG}
     \bicaption[fig:添加持久性时延突变后，采用实时动态检测算法处理前后的同步曲线]{添加持久性时延变化后实时检测处理后的同步曲线}{添加持久性时延变化后实时检测处理后的同步曲线}{Fig}{The Synchronization curve with real-time dynamic monitoring method, within persistence time-delay change}
   \end{minipage}     
 \end{figure}
 
-可以发现，在图\ref{fig:添加持久性时延变化后样本逐步覆盖的同步曲线}中，同步系统运行到2s时添加持久性时延变化，同步系统由于链路传输延时变化而随着慢慢变化，但由于从时钟系统并为检测到链路发生了重配置，所以还是按原始方法进行同步，这使得同步系统需要大概4s左右时间才能恢复正常，即在这4s内逐渐消除原始样本对新链路样本的影响。而在图\ref{fig:添加持久性时延突变后，采用实时动态检测算法处理前后的同步曲线}中，可以看到同步系统在1.5s左右的时间内即恢复正常，这是因为实时检测，发现样本朝某一个方向发生固定变化，因此使旧有样本立即失效，重新同步。
+可以发现，在图\ref{fig:添加持久性时延变化后样本逐步覆盖的同步曲线}中，同步系统运行到8s时添加持久性时延变化，同步系统由于链路传输延时变化而随着慢慢变化，但由于从时钟系统并为检测到链路发生了重配置，所以还是按原始方法进行同步，这使得同步系统需要大概10s左右时间才能恢复正常，即在这10s内逐渐消除原始样本对新链路样本的影响。而在图\ref{fig:添加持久性时延突变后，采用实时动态检测算法处理前后的同步曲线}中，可以看到同步系统在6s左右的时间内即恢复正常，这是因为实时检测，发现样本朝某一个方向发生固定变化，因此使旧有样本立即失效，重新同步。
 
 可以看出，利用实时动态检测算法对持久性时延变化进行实时检测后，可以在系统中发生持久性时延变化后通过实时检测能够迅速发现该变化，然后采取相关措施后使得同步过程快速恢复正常，这提高了同步系统对外界变化的快速响应性。
 
@@ -409,7 +409,7 @@ f_{delta} = \frac{1}{T_{m}} - \frac{1}{T_{s}}
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=10cm]{matlab/a默认晶振源漂移主从偏差.png}
+    \includegraphics[width=11cm]{matlab/a默认晶振源漂移主从偏差.png}
     \bicaption[fig:为从时钟源频率添加固定衰减后的同步曲线]{为从时钟源频率添加固定衰减后的同步曲线}{为从时钟源频率添加固定衰减后的同步曲线}{Fig}{The Synchronization curve, within persistence time-decrease in slave clock}
   \end{minipage}     
 \end{figure}
@@ -420,12 +420,12 @@ f_{delta} = \frac{1}{T_{m}} - \frac{1}{T_{s}}
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
     \centering
-    \includegraphics[width=10cm]{matlab/a晶振源漂移补偿后主从偏差.png}
+    \includegraphics[width=11cm]{matlab/a晶振源漂移补偿后主从偏差.png}
     \bicaption[fig:采用晶振源频率补偿算法后的同步曲线]{采用晶振源频率补偿算法后的同步曲线}{采用晶振源频率补偿算法后的同步曲线}{Fig}{The Synchronization curve by frequency compensation, within persistence time-decrease in slave clock}
   \end{minipage}     
 \end{figure}
 
-通过上面的比较，可以看出，在图\ref{fig:为从时钟源频率添加固定衰减后的同步曲线}中不使用频率补偿时，由于从时钟频率漂移导致主从时间差越来越大，需要校正的幅度也越来越大，时钟同步曲线在-5ns － 20ns之间波动。但是当对从时钟频率进行补偿后，如图\ref{fig:采用晶振源频率补偿算法后的同步曲线}，使得主从时钟的频率更加接近，削弱了从时钟漂移带来的偏差，时钟同步曲线在-5ns － 10ns之间波动，幅度减小，更加的稳定。
+通过上面的比较，可以看出，在图\ref{fig:为从时钟源频率添加固定衰减后的同步曲线}中不使用频率补偿时，由于从时钟频率漂移导致主从时间差越来越大，需要校正的幅度也越来越大，时钟同步曲线在-80ns － 60ns之间波动。但是当对从时钟频率进行补偿后，如图\ref{fig:采用晶振源频率补偿算法后的同步曲线}，使得主从时钟的频率更加接近，削弱了从时钟漂移带来的偏差，时钟同步曲线在-50ns － 50ns之间波动，幅度减小，更加的稳定。
 
 \section{本章小结}
 在本章节中，为了提高从时钟的稳定性，常规的做法是直接使用计算误差offset值对从时钟进行校正，不过那种做法会使得从时钟具有较大的波动，而且不能有效利用历史数据来进行调节。因此，本小结首先阐述了时钟伺服系统的概念，使用时钟伺服系统一般能够较好的提高同步系统的稳定性。然后，文中提到常规PID控制器校正，不过，为了应对延时阶跃性突变这种情况，文中又采用了一种多模型PID控制系统，即通过对控制误差进行检测，一旦发现控制误差发生阶跃变化，就切换控制器，以防止从时钟发生较大抖动，同时，在一定的观察时间段内，如果控制误差阶跃性恢复到原始值，则立即切换回常规PID控制，否则，直到观测时间短结束，才切回常规PID控制。阶跃信号会使得常规PID控制器控制后的从时钟发生频繁的调整，这会影响到依赖它的整个系统的抖动。而采用多模型PID控制系统可以把持续的波动转变成一个瞬时性的变化，这可以明显减小从时钟的频繁抖动，使整个系统更加稳定。
