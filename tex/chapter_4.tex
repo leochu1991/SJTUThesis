@@ -233,22 +233,23 @@ f_{delta} = \frac{1}{T_{m}} - \frac{1}{T_{s}}
     \bicaption[fig:simulation_message_send]{报文发送模块仿真模型}{报文发送模块仿真模型}{Fig}{The model for sending message}
   \end{minipage}     
 \end{figure}
-
 \subsection{算法仿真思路及指标分析}
 下面，为了能够在stateflow仿真平台上验证上述所提统计方法的有效性，下面将从以下几个角度来进行模拟与验证。
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-  \item 对于传输延时抖动，可以在传输中添加随机延时噪声来进行验证；
-  \item 对于暂时性时延突变，可以对传输延时添加阶跃噪声，并观察对同步过程的影响；
-  \item 对于持久性变化，可以在运行时链路传输中添加永久性固有延时，并观察结果；
-  \item 对于控制策略，可以分别采取普通PID控制器校正和基于多模PID控制策略进行同步效果对比。
+  \item 对于传输延时抖动验证，可以在传输中添加随机延时噪声，做对比仿真实验来观察抖动消除效果，同时，为了观察时间窗长度对同步效果的影响，可以采用不同的时间窗长度如10与30，来进行对比观察同步曲线的差异；
+  \item 对于暂时性时延突变验证，可以对传输延时添加阶跃噪声，观察对同步过程的影响，同时，为了检验动态阈值法中的参数控制量$\alpha$对阶跃噪声的效果，可以采用不同的$\alpha$ 值，如1.5和3来做对比仿真，并观察$\alpha$值对同步效果的影响；
+  \item 对于持久性变化验证，可以在运行时链路传输中添加持久性固有延时，来观察滑动时间窗实时检测方法对该持久延时的检测效果及同步恢复效果，同时，为了了解容忍度$\omega$值对同步效果的影响，可以采用不同的$\omega$值，如1.2和1.5来进行对比仿真并观察影响；
+  \item 对于频率补偿验证，可以提前设定主从时钟频率固定偏差，然后做对比仿真实验来观察频率补偿效果；
+  \item 对于控制策略验证，可以分别采取普通PID控制器校正和基于多模PID控制策略进行同步效果对比。
 \end{itemize}
-
 为了验证本文所提的优化方法，下面会在整个同步系统外部，通过监听主时钟和从时钟的时钟偏差曲线，从而可以知道该同步系统的同步性能。主要的比较指标有下面几点：
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
   \item 偏差值：通过观察主从时钟的偏差值，可以看出该同步系统的同步效果，这也能直接反映真实的同步精度。因此，可以以此来检测同步系统中链路延时抖动和暂时性抖动对同步精度造成的影响。
-  \item 鲁棒性：当系统中发生持久性时延变化，那么会造成从时钟发生较大的抖动，所以，可以依据此来检测针对持久性时延变化的优化方法的效果，如果该优化方法能够使的从时钟的抖动减小，那么表示从时钟的鲁棒性得到了提高。
-  \item 收敛速度及稳定性：可以通过观察主从偏差的波动值，并计算其收敛时间。尤其是在链路环境发生变化，即类似工业环境中的多种复杂因素导致系统不稳定，以此来观察系统的收敛速度和最终的稳定性，从而来判断本文采用的基于多模型的PID控制器的效果。
+  \item 快速性：当系统中发生持久性时延变化，那么会造成从时钟发生较大的抖动，所以，可以依据此来检测针对持久性时延变化的优化方法的效果，如果该优化方法能够使的从时钟的抖动减小，快速恢复到正常同步进程中，那么表示从时钟的恢复快速性得到了提高。
+  \item 稳定性：可以通过观察主从偏差的波动值，并计算其收敛时间。尤其是在链路环境发生变化，即类似工业环境中的多种复杂因素导致系统不稳定，以此来观察系统的收敛速度和最终的稳定性，从而来判断本文采用的基于多模型的PID控制器的效果。
 \end{itemize}
+下面以这些指标为核心目标进行仿真与分析。
+\\ \\ \\ \\
 
 \section{算法仿真及结果分析}
 为了验证上文中提到的最小二乘法，动态阈值法和实时动态检测方法的实际效果，下面一次对这三种方法进行验证。在验证中，可以通过认为模拟延时抖动、排队堵塞和拓扑结构变化等因素导致的时延变化，通过比较采用相关方法前后的同步曲线来得出相关结论。
@@ -347,10 +348,7 @@ G(d_{i}) = \left\{
 \begin{equation}
   \alpha = 3
 \end{equation}
-\begin{equation}
-  \alpha = 1.5
-\end{equation}
-\begin{figure}[hbp]
+\begin{figure}[htbp]
   \centering
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
@@ -359,6 +357,9 @@ G(d_{i}) = \left\{
     \bicaption[fig:添加暂时性时延突变后，采用动态阈值法控制量为3时的同步曲线]{添加暂时性时延突变后，采用动态阈值法控制量为3时的同步曲线}{添加暂时性时延突变后，采用动态阈值法控制量为3时的同步曲线}{Fig}{The Synchronization curve with dynamic threshold value method, within temporary time-delay mutation, and control parameter equals to 3}
   \end{minipage}     
 \end{figure}
+\begin{equation}
+  \alpha = 1.5
+\end{equation}
 \begin{figure}[htbp]
   \centering
   \begin{minipage}[b]{1\textwidth}
@@ -368,8 +369,7 @@ G(d_{i}) = \left\{
     \bicaption[fig:添加暂时性时延突变后，采用动态阈值法控制量为1.5时的同步曲线]{添加暂时性时延突变后，采用动态阈值法控制量为1.5时的同步曲线}{添加暂时性时延突变后，采用动态阈值法控制量为1.5时的同步曲线}{Fig}{The Synchronization curve with dynamic threshold value method, within temporary time-delay mutation, and control parameter equals to 1.5}
   \end{minipage}     
 \end{figure}
-\\ \\ \\ \\ \\ \\ \\ \\
-
+\\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\
 对比曲线\ref{fig:添加暂时性时延突变后，采用动态阈值法控制量为3时的同步曲线}和\ref{fig:添加暂时性时延突变后，采用动态阈值法控制量为1.5时的同步曲线}可以看出，当$\alpha$取值减小，则动态阈值降低，对于时延突变也更为敏感，而且一旦发生了时延突变，则会把同步值限制在一个较小的范围内部。因此，降低$\alpha$值可以提高同步系统对暂时性时延突变的敏感度，但同时如果过于敏感则有可能会导致误检测，因此需要具体实践经验积累来进行调节。
 
 通过上述对比仿真结果可以看出，利用动态阈值法对阶跃噪声进行优化后，从时钟的瞬间振荡明显减小，这意味着从时钟具备了更好的鲁棒性和稳定性，不会轻易随着网络负载变化而发生较大波动。
@@ -399,7 +399,7 @@ G(d_{i}) = \left\{
     \bicaption[fig:添加持久性时延变化后实时检测w=1.5的同步曲线]{添加持久性时延变化后实时检测w=1.5的同步曲线}{添加持久性时延变化后实时检测w=1.5的同步曲线}{Fig}{The Synchronization curve with real-time dynamic monitoring method, within persistence time-delay change, and w equals to 1.5}
   \end{minipage}     
 \end{figure}
-\\ \\ 
+\\ \\ \\
 
 通过对比可以发现，在图\ref{fig:添加持久性时延变化后样本逐步覆盖的同步曲线}中，同步系统运行到8s时添加持久性时延变化，同步系统由于链路传输延时变化而随着慢慢变化，但由于从时钟系统并为检测到链路发生了重配置，所以还是按原始方法进行同步，这使得同步系统需要大概10s左右时间才能恢复正常，即在这10s内逐渐消除原始样本对新链路样本的影响。而在图\ref{fig:添加持久性时延变化后实时检测w=1.5的同步曲线}中，可以看到同步系统在6s左右的时间内即恢复正常，这是因为实时检测，发现样本朝某一个方向发生固定变化，因此使旧有样本立即失效，重新同步。
 
@@ -436,7 +436,7 @@ R_{c} = \left\{
 
 \subsection{验证多模型PID控制器对阶跃噪声的优化效果}
 为了验证多模型PID控制器对阶跃噪声的效果，需要先采用经验法设置合适的PID参数，然后对时延信号进行检测，一旦发现突变噪声，则进行模型切换。可以得到下面的同步曲线\ref{fig:step_signal_into_normal_pid}和\ref{fig:step_signal_into_multi_model_pid}。
-\begin{figure}[!hbp]
+\begin{figure}[htbp]
   \centering
   \begin{minipage}[b]{0.7\textwidth}
    \captionstyle{\centering}
@@ -454,9 +454,9 @@ R_{c} = \left\{
    \bicaption[fig:step_signal_into_multi_model_pid]{多模型PID应对阶跃噪声的同步曲线}{多模型PID应对阶跃噪声的同步曲线}{Fig}{The multi-model PID controller handling step signal of time-delay}
   \end{minipage}     
 \end{figure}
-\\ \\ \\ \\ \\ \\ \\ \\ \\
+\\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ 
 
-阶跃信号会使得常规PID控制下的从时钟系统发生频繁的调整，这会直接导致整个从时钟系统的抖动。而通过比较两个仿真曲线，可以看出，后者采用了多模型PID控制系统后，把持续的抖动转变成了一个暂时性的变化，促进了整体运行更为平稳，对于阶跃突变噪声信号有更好的适应性，一定程度上改善了从时钟的稳定性。
+阶跃信号会使得常规PID控制下的从时钟系统发生频繁的调整，这会直接导致整个从时钟系统的抖动。而通过比较两个仿真曲线\ref{fig:step_signal_into_normal_pid}和\ref{fig:step_signal_into_multi_model_pid}，可以看出，后者采用了多模型PID控制系统后，把持续的抖动转变成了一个暂时性的变化，促进了整体运行更为平稳，对于阶跃突变噪声信号有更好的适应性，一定程度上改善了从时钟的稳定性。
 
 \subsection{验证统计策略对晶振源频率补偿的优化效果}
 为了在仿真系统中模拟从时钟晶振源漂移的情况，假设要模拟从时钟频率在不断衰减，即时间周期越来越长这样一种情况，那么可以给从时钟频率添加一个固定的衰减，使得从时钟的频率处于不断的小幅衰减中。然后，再利用上面采用的频率补偿法，不断的对从时钟频率进行补偿，以保持主从时钟源频率尽可能的一致。
@@ -481,7 +481,7 @@ R_{c} = \left\{
     \bicaption[fig:采用晶振源频率补偿算法后的同步曲线]{采用晶振源频率补偿算法后的同步曲线}{采用晶振源频率补偿算法后的同步曲线}{Fig}{The Synchronization curve by frequency compensation, within persistence time-decrease in slave clock}
   \end{minipage}     
 \end{figure}
-\\ \\ \\ \\ \\ 
+\\ \\ \\ \\ \\ \\
 
 通过上面的比较，可以看出，在图\ref{fig:为从时钟源频率添加固定衰减后的同步曲线}中不使用频率补偿时，由于从时钟频率漂移导致主从时间差越来越大，需要校正的幅度也越来越大，时钟同步曲线在-80ns － 60ns之间波动。但是当对从时钟频率进行补偿后，如图\ref{fig:采用晶振源频率补偿算法后的同步曲线}，使得主从时钟的频率更加接近，削弱了从时钟漂移带来的偏差，时钟同步曲线在-50ns － 50ns之间波动，幅度减小，更加的稳定。
 
