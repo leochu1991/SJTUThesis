@@ -269,7 +269,7 @@ f_{delta} = \frac{1}{T_{m}} - \frac{1}{T_{s}}
   \end{minipage}     
 \end{figure}
 
-\begin{figure}[!hbp]
+\begin{figure}[htbp]
   \centering
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
@@ -280,13 +280,13 @@ f_{delta} = \frac{1}{T_{m}} - \frac{1}{T_{s}}
 \end{figure}
 
 首先，对比曲线\ref{fig:添加正态分布的随机抖动后的同步曲线}与\ref{fig:添加正态分布随机抖动且利用最小二乘处理时间窗长度为10的同步曲线}，可以看出，未做任何处理时的同步曲线在-80ns－+80ns之间波动，而采用最小二乘法进行样本处理后的同步曲线在-20ns－+20ns之间波动，这说明最小二乘法处理后可以明显减小随机噪声对同步结果的影响，从时钟振动幅度减小，从时钟具有更好的同步效果。说明该方法能够很好的减小随机抖动对从时钟系统的影响。
-
+\\ \\ \\ \\ \\
 另外，由于最小二乘法需要考虑时间窗的长度，即计算回归曲线所需要的最少的样本个数m。为了了解样本个数对时钟同步的影响，下面再按下式给时间窗长度m赋值，
 \begin{equation}
   m = 30
 \end{equation}
 可以得到下面的同步曲线\ref{fig:添加正态分布随机抖动且利用最小二乘处理时间窗长度为30的同步曲线}。
-\begin{figure}[!hbp]
+\begin{figure}[htbp]
   \centering
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
@@ -295,7 +295,7 @@ f_{delta} = \frac{1}{T_{m}} - \frac{1}{T_{s}}
     \bicaption[fig:添加正态分布随机抖动且利用最小二乘处理时间窗长度为30的同步曲线]{添加正态分布随机抖动且利用最小二乘处理时间窗长度为30的同步曲线}{添加正态分布随机抖动且利用最小二乘处理时间窗长度为30的同步曲线}{Fig}{The Synchronization curve dealing with least square method, within Normal Distribution random noise. Time-window length is 30}
   \end{minipage}     
 \end{figure}
-
+\\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\
 通过对比曲线\ref{fig:添加正态分布随机抖动且利用最小二乘处理时间窗长度为10的同步曲线}与\ref{fig:添加正态分布随机抖动且利用最小二乘处理时间窗长度为30的同步曲线}，可以看出，时间窗长度m值为10时，收敛速度相对较快，在3s左右就进入收敛了。当长度m取值为30时，收敛速度相对较慢，直到6s左右才进入收敛。但是，可以看出，m为30时的收敛后的精度比m为10时的收敛后精度更高，这是因为采用更多的样本，可以得到更为精确的回归直线，不过这需要花费更多的时间。
 
 \subsection{验证动态阈值法对暂时性时延突变的优化}
@@ -369,17 +369,15 @@ G(d_{i}) = \left\{
     \bicaption[fig:添加暂时性时延突变后，采用动态阈值法控制量为1.5时的同步曲线]{添加暂时性时延突变后，采用动态阈值法控制量为1.5时的同步曲线}{添加暂时性时延突变后，采用动态阈值法控制量为1.5时的同步曲线}{Fig}{The Synchronization curve with dynamic threshold value method, within temporary time-delay mutation, and control parameter equals to 1.5}
   \end{minipage}     
 \end{figure}
-\\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\
+\\
+
 对比曲线\ref{fig:添加暂时性时延突变后，采用动态阈值法控制量为3时的同步曲线}和\ref{fig:添加暂时性时延突变后，采用动态阈值法控制量为1.5时的同步曲线}可以看出，当$\alpha$取值减小，则动态阈值降低，对于时延突变也更为敏感，而且一旦发生了时延突变，则会把同步值限制在一个较小的范围内部。因此，降低$\alpha$值可以提高同步系统对暂时性时延突变的敏感度，但同时如果过于敏感则有可能会导致误检测，因此需要具体实践经验积累来进行调节。
 
 通过上述对比仿真结果可以看出，利用动态阈值法对阶跃噪声进行优化后，从时钟的瞬间振荡明显减小，这意味着从时钟具备了更好的鲁棒性和稳定性，不会轻易随着网络负载变化而发生较大波动。
 
 \subsection{验证实时动态检测法对持久性时延变化的优化}
-为了模拟持久性时延变化，在同步系统运行中间，加入一个恒定的时延变化，并保持不变。然后分别仿真出采用实时动态检测方法前后的时钟同步曲线。见对比图\ref{fig:添加持久性时延变化后样本逐步覆盖的同步曲线}与\ref{fig:添加持久性时延变化后实时检测w=1.5的同步曲线}。
-
-为了模拟持久性延时变化，给链路延时添加固定的增量，并且保持不变，然后可以得到如下的同步曲线：
-
-\begin{figure}[!hbp]
+为了模拟持久性时延变化，在同步系统运行中间，给链路延时添加固定的增量，并且保持不变。然后分别仿真出采用实时动态检测方法前后的时钟同步曲线。见对比图\ref{fig:添加持久性时延变化后样本逐步覆盖的同步曲线}与\ref{fig:添加持久性时延变化后实时检测w=1.5的同步曲线}。
+\begin{figure}[htbp]
   \centering
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
@@ -388,9 +386,7 @@ G(d_{i}) = \left\{
     \bicaption[fig:添加持久性时延变化后样本逐步覆盖的同步曲线]{添加持久性时延变化后样本逐步覆盖的同步曲线}{添加持久性时延变化后样本逐步覆盖的同步曲线}{Fig}{The Synchronization curve, within persistence time-delay change}
   \end{minipage}     
 \end{figure}
-
-然后，保持上面的固定增量，采用动态检测方法来进行处理，可以得到同步曲线\ref{fig:添加持久性时延变化后实时检测w=1.5的同步曲线}。
-\begin{figure}[htbp]
+\begin{figure}[hbp]
   \centering
   \begin{minipage}[b]{1\textwidth}
     \captionstyle{\centering}
@@ -399,7 +395,7 @@ G(d_{i}) = \left\{
     \bicaption[fig:添加持久性时延变化后实时检测w=1.5的同步曲线]{添加持久性时延变化后实时检测w=1.5的同步曲线}{添加持久性时延变化后实时检测w=1.5的同步曲线}{Fig}{The Synchronization curve with real-time dynamic monitoring method, within persistence time-delay change, and w equals to 1.5}
   \end{minipage}     
 \end{figure}
-\\ \\ \\
+\\ 
 
 通过对比可以发现，在图\ref{fig:添加持久性时延变化后样本逐步覆盖的同步曲线}中，同步系统运行到8s时添加持久性时延变化，同步系统由于链路传输延时变化而随着慢慢变化，但由于从时钟系统并为检测到链路发生了重配置，所以还是按原始方法进行同步，这使得同步系统需要大概10s左右时间才能恢复正常，即在这10s内逐渐消除原始样本对新链路样本的影响。而在图\ref{fig:添加持久性时延变化后实时检测w=1.5的同步曲线}中，可以看到同步系统在6s左右的时间内即恢复正常，这是因为实时检测，发现样本朝某一个方向发生固定变化，因此使旧有样本立即失效，重新同步。
 
@@ -436,7 +432,7 @@ R_{c} = \left\{
 
 \subsection{验证多模型PID控制器对阶跃噪声的优化效果}
 为了验证多模型PID控制器对阶跃噪声的效果，需要先采用经验法设置合适的PID参数，然后对时延信号进行检测，一旦发现突变噪声，则进行模型切换。可以得到下面的同步曲线\ref{fig:step_signal_into_normal_pid}和\ref{fig:step_signal_into_multi_model_pid}。
-\begin{figure}[htbp]
+\begin{figure}[!hbp]
   \centering
   \begin{minipage}[b]{0.7\textwidth}
    \captionstyle{\centering}
