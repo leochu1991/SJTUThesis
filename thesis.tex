@@ -35,11 +35,11 @@
 
 \makeatletter
 \ifsjtu@submit\relax
-	\makeDeclareOriginal
-	\makeDeclareAuthorization
-	% \includepdf{pdf/original.pdf}
+	% \makeDeclareOriginal
+	% \makeDeclareAuthorization
+	% \includepdf{pdf/original.jpg}
 	% \cleardoublepage
-	% \includepdf{pdf/authorization.pdf}
+	% \includepdf{pdf/authorization.jpg}
 	% \cleardoublepage
 \else
 	\makeDeclareOriginal
@@ -56,10 +56,10 @@
 
 %% 目录、插图目录、表格目录
 \tableofcontents
-% \listoffigures
-% \addcontentsline{toc}{chapter}{\listfigurename} %将插图目录加入全文目录
-% \listoftables
-% \addcontentsline{toc}{chapter}{\listtablename}  %将表格目录加入全文目录
+\listoffigures
+\addcontentsline{toc}{chapter}{\listfigurename} %将插图目录加入全文目录
+\listoftables
+\addcontentsline{toc}{chapter}{\listtablename}  %将表格目录加入全文目录
 % \listofalgorithms
 % \addcontentsline{toc}{chapter}{代码索引}  %将表格目录加入全文目录
 
